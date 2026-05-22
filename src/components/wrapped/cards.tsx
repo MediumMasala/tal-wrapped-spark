@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { useState } from "react";
 import { Mascot } from "./Mascot";
 import { wrappedConfig } from "@/config/stats";
 import {
@@ -784,8 +785,6 @@ export function Card8() {
 /* ============================================================
  * CARD FORM — last ask: name, department, best manager
  * ============================================================ */
-import { useState } from "react";
-
 export function CardForm({ onSubmit }: { onSubmit: () => void }) {
   const [name, setName] = useState("");
   const [department, setDepartment] = useState("");
