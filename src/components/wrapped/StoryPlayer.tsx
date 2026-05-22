@@ -1,7 +1,5 @@
 import { AnimatePresence, motion, type PanInfo } from "framer-motion";
 import { useEffect, useState } from "react";
-import { X } from "lucide-react";
-import { Mascot } from "./Mascot";
 import {
   Card1,
   Card2,
