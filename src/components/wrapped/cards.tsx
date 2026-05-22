@@ -157,7 +157,7 @@ export function Card1({ name }: { name: string }) {
       </div>
 
       <motion.div
-        style={{ position: "absolute", right: -8, bottom: 24 }}
+        style={{ position: "absolute", right: 16, bottom: 24 }}
         initial={{ y: 80, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.6, duration: 0.6, ease }}
