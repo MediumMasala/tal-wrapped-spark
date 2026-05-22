@@ -10,6 +10,13 @@ export const wrappedConfig = {
     growth: "240%",
     newTeammates: 18,
   },
+  topCompanies: [
+    { name: "Zomato", tagline: "Order in, anywhere", logo: "/logos/zomato.svg" },
+    { name: "Swiggy", tagline: "Faster than your boss replies", logo: "/logos/swiggy.svg" },
+    { name: "Razorpay", tagline: "Money moves", logo: "/logos/razorpay.svg" },
+    { name: "Cred", tagline: "Pay credit cards, look cool", logo: "/logos/cred.svg" },
+    { name: "Zerodha", tagline: "Where the money grows up", logo: "/logos/zerodha.svg" },
+  ],
 };
 
 export type WrappedConfig = typeof wrappedConfig;

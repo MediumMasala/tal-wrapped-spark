@@ -1,25 +1,26 @@
 import { motion } from "framer-motion";
 import { Mascot } from "./Mascot";
-import { ParallelogramFan, StairBlock } from "./StairShape";
 import { wrappedConfig } from "@/config/stats";
-
-const CREAM = "#FFF4E6";
-const ORANGE = "#FF6B35";
-const DEEP = "#CC3D0E";
-const ACCENT = "#FFB800";
-const CYAN = "#00C2FF";
+import {
+  CheckerboardBg,
+  PixelRhombusFrame,
+  PixelStairs,
+  PixelStripeRow,
+  SpikyBurst,
+  StackedFan,
+  StairText,
+} from "./primitives";
 
 const ease = [0.65, 0, 0.35, 1] as const;
 
-/** Container that fills the 9:16 viewport. */
 function CardShell({
   children,
   background,
-  style,
+  color = "#FFF4E6",
 }: {
   children: React.ReactNode;
   background: string;
-  style?: React.CSSProperties;
+  color?: string;
 }) {
   return (
     <div
@@ -28,27 +29,11 @@ function CardShell({
         inset: 0,
         overflow: "hidden",
         background,
-        color: CREAM,
-        ...style,
+        color,
       }}
     >
       {children}
     </div>
-  );
-}
-
-function BreathingBg({ from, to }: { from: string; to: string }) {
-  return (
-    <motion.div
-      aria-hidden
-      style={{
-        position: "absolute",
-        inset: "-20%",
-        background: `radial-gradient(circle at 50% 50%, ${from} 0%, ${to} 70%)`,
-      }}
-      animate={{ scale: [1, 1.08, 1], rotate: [0, 4, 0] }}
-      transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-    />
   );
 }
 
@@ -61,7 +46,7 @@ function FadeUp({
 }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 8 }}
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay, ease }}
     >
@@ -71,15 +56,22 @@ function FadeUp({
 }
 
 /* ============================================================
- * CARD 1 — Title (giant 3D 2025 numeral)
+ * CARD 1 — Title: deep red + giant clipped "2025"
  * ============================================================ */
 export function Card1({ name }: { name: string }) {
-  // exit: explode into ~40 fragments
   const fragments = Array.from({ length: 40 });
   return (
-    <CardShell background="#1a0a04">
-      <BreathingBg from={DEEP} to="#3a0e02" />
-      {/* Giant extruded year */}
+    <CardShell background="#B81D13">
+      {/* Top pixel stripe */}
+      <div style={{ position: "absolute", top: 0, left: 0, right: 0 }}>
+        <PixelStripeRow color="#FF1B6B" alt="#FFCC00" height={20} unit={20} />
+      </div>
+      {/* Bottom pixel stripe */}
+      <div style={{ position: "absolute", bottom: 0, left: 0, right: 0 }}>
+        <PixelStripeRow color="#FF1B6B" alt="#FFCC00" height={20} unit={20} />
+      </div>
+
+      {/* Giant clipped "2025" with stair-stepped pink-orange shadow */}
       <motion.div
         initial={{ scale: 0.7, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
@@ -91,12 +83,20 @@ export function Card1({ name }: { name: string }) {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
+          overflow: "visible",
         }}
       >
-        <ExtrudedYear year={wrappedConfig.year} />
+        <StairText
+          text={String(wrappedConfig.year)}
+          color="#FFCC00"
+          shadow="#FF6BA1"
+          layers={14}
+          step={10}
+          fontSize="clamp(220px, 42vw, 480px)"
+        />
       </motion.div>
 
-      {/* Exit-only fragment explosion overlay */}
+      {/* Fragment explosion on exit */}
       <motion.div
         aria-hidden
         initial={{ opacity: 0 }}
@@ -122,9 +122,9 @@ export function Card1({ name }: { name: string }) {
                 position: "absolute",
                 left: "50%",
                 top: "50%",
-                width: 24,
-                height: 12,
-                background: i % 2 ? ORANGE : ACCENT,
+                width: 28,
+                height: 14,
+                background: i % 2 ? "#FFCC00" : "#FF6BA1",
                 transform: "skewX(-18deg)",
               }}
             />
@@ -132,15 +132,7 @@ export function Card1({ name }: { name: string }) {
         })}
       </motion.div>
 
-      {/* Copy */}
-      <div
-        style={{
-          position: "absolute",
-          left: 24,
-          right: 24,
-          bottom: 110,
-        }}
-      >
+      <div style={{ position: "absolute", left: 24, right: 24, bottom: 90 }}>
         <FadeUp delay={0.2}>
           <h1
             style={{
@@ -148,7 +140,8 @@ export function Card1({ name }: { name: string }) {
               fontSize: 36,
               lineHeight: 1.05,
               margin: 0,
-              color: CREAM,
+              color: "#FFF4E6",
+              letterSpacing: "-0.02em",
             }}
           >
             Hey {name},<br />
@@ -156,101 +149,44 @@ export function Card1({ name }: { name: string }) {
           </h1>
         </FadeUp>
         <FadeUp delay={0.5}>
-          <p
-            style={{
-              marginTop: 12,
-              fontWeight: 500,
-              fontSize: 16,
-              opacity: 0.8,
-            }}
-          >
+          <p style={{ marginTop: 10, fontWeight: 600, fontSize: 16, opacity: 0.9 }}>
             Tap to see what you helped build.
           </p>
         </FadeUp>
       </div>
 
-      {/* Mascot peek bottom-right */}
       <motion.div
-        style={{ position: "absolute", right: -10, bottom: -8 }}
+        style={{ position: "absolute", right: -8, bottom: 24 }}
         initial={{ y: 80, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.6, duration: 0.6, ease }}
       >
-        <Mascot size={120} rounded={false} />
+        <Mascot size={110} rounded={false} />
       </motion.div>
     </CardShell>
   );
 }
 
-function ExtrudedYear({ year }: { year: number }) {
-  const text = String(year);
-  const layers = 12;
-  return (
-    <div style={{ position: "relative", width: 320, height: 200 }}>
-      {Array.from({ length: layers }).map((_, i) => {
-        const o = (layers - i) * 3;
-        const t = i / layers;
-        const color = `rgb(${Math.round(204 - t * 80)}, ${Math.round(
-          61 + t * 30,
-        )}, ${Math.round(14)})`;
-        return (
-          <div
-            key={i}
-            style={{
-              position: "absolute",
-              left: o,
-              top: o,
-              fontWeight: 900,
-              fontSize: 180,
-              lineHeight: 1,
-              color,
-              letterSpacing: "-0.05em",
-              fontFamily: "Inter, sans-serif",
-            }}
-          >
-            {text}
-          </div>
-        );
-      })}
-      <div
-        style={{
-          position: "absolute",
-          left: 0,
-          top: 0,
-          fontWeight: 900,
-          fontSize: 180,
-          lineHeight: 1,
-          color: ACCENT,
-          letterSpacing: "-0.05em",
-          fontFamily: "Inter, sans-serif",
-        }}
-      >
-        {text}
-      </div>
-    </div>
-  );
-}
-
 /* ============================================================
- * CARD 2 — Voice opener (fan of parallelograms)
+ * CARD 2 — Magenta + diagonal yellow parallelogram fan
  * ============================================================ */
 export function Card2() {
   return (
-    <CardShell background="#1a0a04">
-      <BreathingBg from="#4a1606" to="#1a0a04" />
+    <CardShell background="#FF1B6B">
       <motion.div
         initial={{ x: -200, y: 200, scale: 0.5, opacity: 0 }}
         animate={{ x: 0, y: 0, scale: 1, opacity: 1 }}
         exit={{ scaleY: 1.8, opacity: 0 }}
         transition={{ duration: 0.7, ease }}
-        style={{
-          position: "absolute",
-          left: "8%",
-          top: "18%",
-          transformOrigin: "center",
-        }}
+        style={{ position: "absolute", left: "5%", top: "10%" }}
       >
-        <ParallelogramFan width={300} height={420} />
+        <StackedFan
+          count={10}
+          width={340}
+          height={520}
+          colorFrom="#FFD700"
+          colorTo="#FFCC00"
+        />
       </motion.div>
 
       <div style={{ position: "absolute", left: 24, right: 24, bottom: 90 }}>
@@ -258,24 +194,19 @@ export function Card2() {
           <h2
             style={{
               fontWeight: 900,
-              fontSize: 44,
-              lineHeight: 1,
+              fontSize: 56,
+              lineHeight: 0.95,
               margin: 0,
-              color: CREAM,
+              color: "#FFF4E6",
+              letterSpacing: "-0.03em",
             }}
           >
-            Big year for {wrappedConfig.companyName}.
+            Big year for<br />
+            {wrappedConfig.companyName}.
           </h2>
         </FadeUp>
         <FadeUp delay={0.4}>
-          <p
-            style={{
-              marginTop: 8,
-              fontWeight: 500,
-              fontSize: 22,
-              opacity: 0.85,
-            }}
-          >
+          <p style={{ marginTop: 10, fontWeight: 700, fontSize: 22, color: "#FFD700" }}>
             Bigger than you think.
           </p>
         </FadeUp>
@@ -285,29 +216,24 @@ export function Card2() {
 }
 
 /* ============================================================
- * CARD 3 — Hires (top + bottom shapes)
+ * CARD 3 — Bright yellow + black type + red rhombus pixel border
  * ============================================================ */
 export function Card3() {
   return (
-    <CardShell background="#150704">
-      <BreathingBg from="#3a1308" to="#150704" />
+    <CardShell background="#FFD700" color="#0A0A0A">
       <motion.div
-        initial={{ y: -200, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        exit={{ x: 60, y: -40, rotate: -10, opacity: 0 }}
-        transition={{ duration: 0.7, ease }}
-        style={{ position: "absolute", top: 40, left: 20 }}
+        initial={{ scale: 0.6, opacity: 0, rotate: 35 }}
+        animate={{ scale: 1, opacity: 1, rotate: 0 }}
+        exit={{ scale: 0, opacity: 0 }}
+        transition={{ duration: 0.6, ease }}
+        style={{
+          position: "absolute",
+          left: "50%",
+          top: "44%",
+          transform: "translate(-50%, -50%)",
+        }}
       >
-        <StairBlock width={260} height={70} color={ORANGE} edgeColor={DEEP} />
-      </motion.div>
-      <motion.div
-        initial={{ y: 200, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        exit={{ x: -60, y: 40, rotate: 10, opacity: 0 }}
-        transition={{ duration: 0.7, ease, delay: 0.05 }}
-        style={{ position: "absolute", bottom: 130, right: 20 }}
-      >
-        <StairBlock width={260} height={70} color={ACCENT} edgeColor={DEEP} />
+        <PixelRhombusFrame size={280} color="#B81D13" step={7} steps={6} />
       </motion.div>
 
       <div
@@ -326,69 +252,74 @@ export function Card3() {
             <div
               style={{
                 fontWeight: 900,
-                fontSize: 120,
-                lineHeight: 1,
-                color: CREAM,
-                letterSpacing: "-0.05em",
+                fontSize: "clamp(160px, 32vw, 280px)",
+                lineHeight: 0.9,
+                letterSpacing: "-0.06em",
+                color: "#0A0A0A",
               }}
             >
               {wrappedConfig.stats.hires}
             </div>
           </FadeUp>
-          <FadeUp delay={0.5}>
-            <div style={{ fontWeight: 900, fontSize: 24, marginTop: 8 }}>
+          <FadeUp delay={0.55}>
+            <div style={{ fontWeight: 900, fontSize: 26, marginTop: 4 }}>
               new people hired.
             </div>
           </FadeUp>
-          <FadeUp delay={0.7}>
-            <div
-              style={{
-                fontWeight: 500,
-                fontSize: 16,
-                marginTop: 8,
-                opacity: 0.8,
-              }}
-            >
+          <FadeUp delay={0.75}>
+            <div style={{ fontWeight: 600, fontSize: 16, marginTop: 6, opacity: 0.75 }}>
               That's a whole new floor.
             </div>
           </FadeUp>
         </div>
       </div>
 
-      <div style={{ position: "absolute", left: 16, bottom: 24 }}>
-        <Mascot size={56} />
+      <div style={{ position: "absolute", right: 12, bottom: 18 }}>
+        <Mascot size={84} />
       </div>
     </CardShell>
   );
 }
 
 /* ============================================================
- * CARD 4 — Customers (diamond stair-frame)
+ * CARD 4 — Electric blue + receding stair pyramid tunnel
  * ============================================================ */
 export function Card4() {
   return (
-    <CardShell background="#1a0a04">
-      <BreathingBg from="#5a1a08" to="#1a0a04" />
-      {/* Diamond frame */}
-      <motion.div
-        initial={{ scale: 0.6, opacity: 0, rotate: 35 }}
-        animate={{ scale: 1, opacity: 1, rotate: 45 }}
-        exit={{ scale: 0, opacity: 0 }}
-        transition={{ duration: 0.7, ease }}
+    <CardShell background="#00A6FF">
+      {/* Receding pyramid: nested rotated squares from huge to tiny */}
+      <div
         style={{
           position: "absolute",
-          left: "50%",
-          top: "44%",
-          width: 280,
-          height: 280,
-          marginLeft: -140,
-          marginTop: -140,
-          background:
-            "linear-gradient(135deg, #FF6B35 0%, #FFB800 100%)",
-          border: `6px solid ${CREAM}`,
-          boxShadow: `8px 8px 0 ${CREAM}, 16px 16px 0 ${DEEP}`,
+          inset: 0,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
         }}
-      />
+      >
+        {Array.from({ length: 10 }).map((_, i) => {
+          const size = 480 - i * 42;
+          const t = i / 10;
+          return (
+            <motion.div
+              key={i}
+              initial={{ scale: 0.4, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: i * 0.04, duration: 0.5, ease }}
+              style={{
+                position: "absolute",
+                width: size,
+                height: size,
+                border: `6px solid rgba(255,255,255,${0.15 + t * 0.6})`,
+                background:
+                  i === 9 ? "#FFF4E6" : `rgba(0, 70, 140, ${0.05 + t * 0.12})`,
+                transform: "rotate(45deg)",
+              }}
+            />
+          );
+        })}
+      </div>
+
       <div
         style={{
           position: "absolute",
@@ -401,40 +332,35 @@ export function Card4() {
           textAlign: "center",
         }}
       >
-        <FadeUp delay={0.3}>
+        <FadeUp delay={0.5}>
           <div
             style={{
               fontWeight: 900,
-              fontSize: 76,
-              color: CREAM,
-              letterSpacing: "-0.04em",
+              fontSize: "clamp(80px, 18vw, 130px)",
+              color: "#FFF4E6",
+              letterSpacing: "-0.05em",
               lineHeight: 1,
+              textShadow: "4px 4px 0 #003D7A",
             }}
           >
             {wrappedConfig.stats.customers}
           </div>
         </FadeUp>
-        <FadeUp delay={0.5}>
+        <FadeUp delay={0.7}>
           <div
             style={{
               fontWeight: 900,
-              fontSize: 20,
-              marginTop: 10,
-              maxWidth: 240,
+              fontSize: 22,
+              marginTop: 14,
+              color: "#FFF4E6",
+              maxWidth: 260,
             }}
           >
             customers chose {wrappedConfig.companyName}.
           </div>
         </FadeUp>
-        <FadeUp delay={0.7}>
-          <div
-            style={{
-              fontWeight: 500,
-              fontSize: 15,
-              marginTop: 14,
-              opacity: 0.85,
-            }}
-          >
+        <FadeUp delay={0.9}>
+          <div style={{ fontWeight: 600, fontSize: 15, marginTop: 12, color: "#E0F4FF" }}>
             And they keep coming back.
           </div>
         </FadeUp>
@@ -444,8 +370,8 @@ export function Card4() {
 }
 
 /* ============================================================
- * CARD 5 — Mascot moment (CREAM bg, BLACK type)
- * Radial wipe enter (the color-flip moment).
+ * CARD 5 — Yellow+lime checkerboard + black spiky burst + mascot
+ * Radial wipe enter.
  * ============================================================ */
 export function Card5() {
   return (
@@ -454,24 +380,10 @@ export function Card5() {
       animate={{ clipPath: "circle(140% at 50% 50%)" }}
       exit={{ clipPath: "polygon(0 0, 100% 0, 100% 0, 0 0)" }}
       transition={{ duration: 0.6, ease }}
-      style={{
-        position: "absolute",
-        inset: 0,
-        background: CREAM,
-        overflow: "hidden",
-      }}
+      style={{ position: "absolute", inset: 0, overflow: "hidden" }}
     >
-      <motion.div
-        aria-hidden
-        style={{
-          position: "absolute",
-          inset: "-10%",
-          background:
-            "radial-gradient(circle at 50% 50%, rgba(255,184,0,0.25) 0%, rgba(255,244,230,0) 60%)",
-        }}
-        animate={{ scale: [1, 1.1, 1] }}
-        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-      />
+      <CheckerboardBg colorA="#FFD700" colorB="#9FE870" cell={80} />
+
       <motion.div
         style={{
           position: "absolute",
@@ -480,17 +392,30 @@ export function Card5() {
           alignItems: "center",
           justifyContent: "center",
         }}
-        animate={{ rotate: [-3, 3, -3] }}
-        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+        animate={{ rotate: [-6, 6, -6] }}
+        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
       >
-        <Mascot size={280} rounded={false} bob={false} />
+        <SpikyBurst size={420} spikes={16} color="#0A0A0A" />
       </motion.div>
+
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Mascot size={220} rounded={false} bob={true} />
+      </div>
+
       <div
         style={{
           position: "absolute",
           left: 24,
           right: 24,
-          bottom: 110,
+          bottom: 90,
           color: "#0A0A0A",
         }}
       >
@@ -498,16 +423,17 @@ export function Card5() {
           <h2
             style={{
               fontWeight: 900,
-              fontSize: 40,
-              lineHeight: 1.05,
+              fontSize: 44,
+              lineHeight: 1,
               margin: 0,
+              letterSpacing: "-0.02em",
             }}
           >
             Tal Boss has been watching.
           </h2>
         </FadeUp>
         <FadeUp delay={0.55}>
-          <p style={{ marginTop: 10, fontWeight: 500, fontSize: 18 }}>
+          <p style={{ marginTop: 10, fontWeight: 700, fontSize: 18 }}>
             Impressed, honestly.
           </p>
         </FadeUp>
@@ -517,38 +443,49 @@ export function Card5() {
 }
 
 /* ============================================================
- * CARD 6 — Biggest month (diagonal corner layout)
- * Diagonal wipe enter.
+ * CARD 6 — Deep magenta + opposing cream stair-stepped corners
  * ============================================================ */
 export function Card6() {
   return (
     <motion.div
       initial={{ clipPath: "polygon(0 0, 0 0, 0 100%, 0 100%)" }}
-      animate={{
-        clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
-      }}
+      animate={{ clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)" }}
       exit={{ opacity: 0, scale: 0.9 }}
       transition={{ duration: 0.7, ease }}
       style={{ position: "absolute", inset: 0, overflow: "hidden" }}
     >
-      <CardShell background="#1a0a04">
-        <BreathingBg from="#4a1606" to="#1a0a04" />
-        {/* Top-right shape thrown by mascot */}
+      <CardShell background="#D90368">
         <motion.div
-          initial={{ x: 200, y: -200, rotate: 30, opacity: 0 }}
-          animate={{ x: 0, y: 0, rotate: 0, opacity: 1 }}
+          initial={{ x: 200, y: -200, opacity: 0 }}
+          animate={{ x: 0, y: 0, opacity: 1 }}
           transition={{ duration: 0.6, ease, delay: 0.1 }}
-          style={{ position: "absolute", top: 30, right: -20 }}
+          style={{ position: "absolute", top: -20, right: -40 }}
         >
-          <StairBlock width={220} height={140} color={ORANGE} edgeColor={DEEP} />
+          <PixelStairs
+            width={240}
+            height={120}
+            color="#FFF4E6"
+            shadow="#7A0040"
+            direction="bl"
+            steps={12}
+            step={8}
+          />
         </motion.div>
         <motion.div
-          initial={{ x: -200, y: 200, rotate: -30, opacity: 0 }}
-          animate={{ x: 0, y: 0, rotate: 0, opacity: 1 }}
+          initial={{ x: -200, y: 200, opacity: 0 }}
+          animate={{ x: 0, y: 0, opacity: 1 }}
           transition={{ duration: 0.6, ease, delay: 0.2 }}
-          style={{ position: "absolute", bottom: 90, left: -20 }}
+          style={{ position: "absolute", bottom: 80, left: -40 }}
         >
-          <StairBlock width={220} height={140} color={ACCENT} edgeColor={DEEP} />
+          <PixelStairs
+            width={240}
+            height={120}
+            color="#FFF4E6"
+            shadow="#7A0040"
+            direction="tr"
+            steps={12}
+            step={8}
+          />
         </motion.div>
 
         <div
@@ -564,7 +501,7 @@ export function Card6() {
         >
           <div>
             <FadeUp delay={0.4}>
-              <div style={{ fontWeight: 500, fontSize: 16, opacity: 0.8 }}>
+              <div style={{ fontWeight: 700, fontSize: 16, opacity: 0.85, color: "#FFF4E6" }}>
                 Biggest month
               </div>
             </FadeUp>
@@ -572,36 +509,30 @@ export function Card6() {
               <div
                 style={{
                   fontWeight: 900,
-                  fontSize: 64,
+                  fontSize: "clamp(80px, 18vw, 140px)",
                   lineHeight: 1,
-                  marginTop: 6,
-                  letterSpacing: "-0.03em",
+                  letterSpacing: "-0.04em",
+                  color: "#FFF4E6",
+                  textShadow: "5px 5px 0 #7A0040",
                 }}
               >
                 {wrappedConfig.stats.biggestMonth}
               </div>
             </FadeUp>
-            <FadeUp delay={0.7}>
+            <FadeUp delay={0.75}>
               <div
                 style={{
                   fontWeight: 900,
-                  fontSize: 24,
-                  marginTop: 8,
-                  color: ACCENT,
+                  fontSize: 26,
+                  marginTop: 12,
+                  color: "#FFD700",
                 }}
               >
                 {wrappedConfig.stats.biggestMonthValue}
               </div>
             </FadeUp>
-            <FadeUp delay={0.85}>
-              <div
-                style={{
-                  fontWeight: 500,
-                  fontSize: 15,
-                  marginTop: 16,
-                  opacity: 0.85,
-                }}
-              >
+            <FadeUp delay={0.9}>
+              <div style={{ fontWeight: 600, fontSize: 15, marginTop: 14, color: "#FFF4E6", opacity: 0.9 }}>
                 Where do you find the time?
               </div>
             </FadeUp>
@@ -613,78 +544,133 @@ export function Card6() {
 }
 
 /* ============================================================
- * CARD 7 — Growth banded layout
+ * CARD 7 — Top Companies From Back Home (Spotify Top Songs style)
+ * Hot pink + clean numbered list
  * ============================================================ */
 export function Card7() {
+  const companies = wrappedConfig.topCompanies;
   return (
-    <CardShell background="#1a0a04">
-      <BreathingBg from="#3a1208" to="#1a0a04" />
-      <motion.div
-        initial={{ scaleX: 0 }}
-        animate={{ scaleX: 1 }}
-        exit={{ scaleY: 0 }}
-        transition={{ duration: 0.6, ease }}
-        style={{
-          position: "absolute",
-          top: 60,
-          left: 0,
-          right: 0,
-          height: 90,
-          background: `linear-gradient(90deg, ${DEEP}, ${ORANGE})`,
-          transformOrigin: "left",
-        }}
-      />
-      <motion.div
-        initial={{ scaleX: 0 }}
-        animate={{ scaleX: 1 }}
-        exit={{ scaleY: 0 }}
-        transition={{ duration: 0.6, ease, delay: 0.1 }}
-        style={{
-          position: "absolute",
-          bottom: 160,
-          left: 0,
-          right: 0,
-          height: 90,
-          background: `linear-gradient(90deg, ${ORANGE}, ${ACCENT})`,
-          transformOrigin: "right",
-        }}
-      />
+    <CardShell background="#FF4FB8" color="#0A0A0A">
+      <div style={{ position: "absolute", top: 70, left: 24, right: 24 }}>
+        <FadeUp delay={0.1}>
+          <h2
+            style={{
+              fontWeight: 900,
+              fontSize: 30,
+              lineHeight: 1,
+              margin: 0,
+              color: "#0A0A0A",
+              letterSpacing: "-0.02em",
+              textTransform: "uppercase",
+            }}
+          >
+            Top Companies<br />From Back Home
+          </h2>
+        </FadeUp>
+      </div>
+
       <div
         style={{
           position: "absolute",
-          inset: 0,
+          top: 180,
+          left: 20,
+          right: 20,
           display: "flex",
           flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          gap: 6,
-          textAlign: "center",
-          padding: "0 24px",
+          gap: 14,
         }}
       >
-        <FadeUp delay={0.3}>
-          <div
+        {companies.map((c, i) => (
+          <motion.div
+            key={c.name}
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.2 + i * 0.08, duration: 0.4, ease }}
             style={{
-              fontWeight: 900,
-              fontSize: 72,
-              lineHeight: 1,
-              letterSpacing: "-0.04em",
+              display: "flex",
+              alignItems: "center",
+              gap: 12,
             }}
           >
-            {wrappedConfig.stats.growth}
-          </div>
-        </FadeUp>
-        <FadeUp delay={0.5}>
-          <div style={{ fontWeight: 900, fontSize: 22 }}>growth.</div>
-        </FadeUp>
-        <FadeUp delay={0.7}>
-          <div style={{ fontWeight: 900, fontSize: 22 }}>
-            {wrappedConfig.stats.newTeammates} new teammates.
-          </div>
-        </FadeUp>
+            <div
+              style={{
+                fontWeight: 900,
+                fontSize: 44,
+                width: 44,
+                color: "#0A0A0A",
+                lineHeight: 1,
+                textAlign: "center",
+                letterSpacing: "-0.04em",
+              }}
+            >
+              {i + 1}
+            </div>
+            <img
+              src={c.logo}
+              alt=""
+              width={56}
+              height={56}
+              style={{
+                width: 56,
+                height: 56,
+                borderRadius: 10,
+                objectFit: "cover",
+                background: "#fff",
+              }}
+            />
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div
+                style={{
+                  fontWeight: 900,
+                  fontSize: 18,
+                  color: "#0A0A0A",
+                  lineHeight: 1.1,
+                }}
+              >
+                {c.name}
+              </div>
+              <div
+                style={{
+                  fontWeight: 600,
+                  fontSize: 13,
+                  color: "#0A0A0A",
+                  opacity: 0.7,
+                  marginTop: 2,
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {c.tagline}
+              </div>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+
+      <div
+        style={{
+          position: "absolute",
+          left: 0,
+          right: 0,
+          bottom: 28,
+          display: "flex",
+          justifyContent: "center",
+        }}
+      >
         <FadeUp delay={0.9}>
-          <div style={{ fontWeight: 900, fontSize: 22, color: ACCENT }}>
-            One {wrappedConfig.companyName}.
+          <div
+            style={{
+              padding: "10px 22px",
+              borderRadius: 999,
+              background: "#0A0A0A",
+              color: "#FFF4E6",
+              fontWeight: 900,
+              fontSize: 14,
+              letterSpacing: "0.02em",
+            }}
+          >
+            Share this story
           </div>
         </FadeUp>
       </div>
@@ -693,33 +679,42 @@ export function Card7() {
 }
 
 /* ============================================================
- * CARD 8 — Tal Boss CTA finale
+ * CARD 8 — Deep red CTA finale + stacked fan + cyan button
  * ============================================================ */
 export function Card8() {
   return (
-    <CardShell background="#1a0a04">
+    <CardShell background="#B81D13">
       <motion.div
         aria-hidden
         style={{
           position: "absolute",
           inset: "-10%",
-          background: `radial-gradient(circle at 30% 30%, ${DEEP} 0%, #1a0a04 70%)`,
+          background:
+            "radial-gradient(circle at 50% 35%, #FF6B35 0%, #B81D13 55%, #5A0A04 100%)",
         }}
-        animate={{ scale: [1, 1.1, 1], rotate: [0, 6, 0] }}
-        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+        animate={{ scale: [1, 1.08, 1] }}
+        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
       />
+
       <motion.div
         initial={{ scale: 0.5, opacity: 0, rotate: -10 }}
-        animate={{ scale: 1.15, opacity: 1, rotate: 0 }}
+        animate={{ scale: 1.1, opacity: 1, rotate: 0 }}
         transition={{ duration: 0.9, ease }}
         style={{
           position: "absolute",
           left: "50%",
-          top: "38%",
+          top: "36%",
           transform: "translate(-50%, -50%)",
         }}
       >
-        <ParallelogramFan count={12} width={340} height={460} />
+        <StackedFan
+          count={12}
+          width={340}
+          height={460}
+          colorFrom="#FFCC00"
+          colorTo="#FF6BA1"
+          offset={20}
+        />
       </motion.div>
 
       <motion.div
@@ -729,11 +724,11 @@ export function Card8() {
         style={{
           position: "absolute",
           left: "50%",
-          top: "32%",
+          top: "30%",
           transform: "translateX(-50%)",
         }}
       >
-        <Mascot size={180} rounded={false} />
+        <Mascot size={190} rounded={false} />
       </motion.div>
 
       <div
@@ -741,7 +736,7 @@ export function Card8() {
           position: "absolute",
           left: 24,
           right: 24,
-          bottom: 120,
+          bottom: 110,
           textAlign: "center",
         }}
       >
@@ -749,10 +744,11 @@ export function Card8() {
           <h2
             style={{
               fontWeight: 900,
-              fontSize: 32,
-              lineHeight: 1.1,
+              fontSize: 34,
+              lineHeight: 1.05,
               margin: 0,
-              color: CREAM,
+              color: "#FFF4E6",
+              letterSpacing: "-0.02em",
             }}
           >
             Your team is hiring.
@@ -767,14 +763,14 @@ export function Card8() {
             style={{
               display: "inline-block",
               marginTop: 22,
-              padding: "16px 28px",
+              padding: "16px 30px",
               borderRadius: 999,
-              background: CYAN,
+              background: "#00C2FF",
               color: "#0A0A0A",
               fontWeight: 900,
               fontSize: 18,
               textDecoration: "none",
-              boxShadow: `0 8px 0 ${DEEP}`,
+              boxShadow: "0 8px 0 #003D7A",
             }}
           >
             Meet Tal Boss →
