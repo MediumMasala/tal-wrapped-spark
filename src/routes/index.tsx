@@ -64,7 +64,8 @@ function Index() {
         Tap through. Meet Tal Boss.
       </p>
       <Link
-        to="/start"
+        to="/wrapped"
+        search={{ name: "there", company: wrappedConfig.companyName }}
         style={{
           marginTop: 32,
           display: "inline-block",

@@ -9,6 +9,7 @@ import {
   Card6,
   Card7,
   Card8,
+  CardForm,
 } from "./cards";
 
 export function StoryPlayer({
@@ -19,13 +20,17 @@ export function StoryPlayer({
   onClose: () => void;
 }) {
   const [index, setIndex] = useState(0);
-  const total = 8;
+  const total = 9;
+  // Second-to-last card is the form — disable tap-to-advance there
+  const isForm = index === total - 2;
 
   const next = () => setIndex((i) => Math.min(i + 1, total - 1));
   const prev = () => setIndex((i) => Math.max(i - 1, 0));
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement | null)?.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA") return;
       if (e.key === "ArrowRight") next();
       if (e.key === "ArrowLeft") prev();
       if (e.key === "Escape") onClose();
@@ -35,6 +40,7 @@ export function StoryPlayer({
   }, [onClose]);
 
   const onDragEnd = (_: unknown, info: PanInfo) => {
+    if (isForm) return;
     if (info.offset.x < -60) next();
     else if (info.offset.x > 60) prev();
   };
@@ -47,6 +53,7 @@ export function StoryPlayer({
     <Card5 key="5" />,
     <Card6 key="6" />,
     <Card7 key="7" />,
+    <CardForm key="form" onSubmit={next} />,
     <Card8 key="8" />,
   ];
 
@@ -107,28 +114,30 @@ export function StoryPlayer({
 
         {/* Tap zones (above card, below chrome) */}
         <div
-          onClick={prev}
+          onClick={isForm ? undefined : prev}
           style={{
             position: "absolute",
             left: 0,
             top: 60,
             bottom: 0,
             width: "35%",
-            zIndex: 5,
-            cursor: "pointer",
+            zIndex: isForm ? 0 : 5,
+            cursor: isForm ? "default" : "pointer",
+            pointerEvents: isForm ? "none" : "auto",
           }}
           aria-label="Previous"
         />
         <div
-          onClick={next}
+          onClick={isForm ? undefined : next}
           style={{
             position: "absolute",
             right: 0,
             top: 60,
             bottom: 0,
             width: "65%",
-            zIndex: 5,
-            cursor: "pointer",
+            zIndex: isForm ? 0 : 5,
+            cursor: isForm ? "default" : "pointer",
+            pointerEvents: isForm ? "none" : "auto",
           }}
           aria-label="Next"
         />
