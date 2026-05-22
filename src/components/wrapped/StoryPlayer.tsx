@@ -1,5 +1,5 @@
 import { AnimatePresence, motion, type PanInfo } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Card1,
   Card2,
@@ -20,6 +20,8 @@ export function StoryPlayer({
   onClose: () => void;
 }) {
   const [index, setIndex] = useState(0);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [muted, setMuted] = useState(false);
   const total = 9;
   // Second-to-last card is the form — disable tap-to-advance there
   const isForm = index === total - 2;
@@ -44,6 +46,26 @@ export function StoryPlayer({
     if (info.offset.x < -60) next();
     else if (info.offset.x > 60) prev();
   };
+
+  useEffect(() => {
+    const a = audioRef.current;
+    if (!a) return;
+    a.volume = 0.35;
+    const tryPlay = () => a.play().catch(() => {});
+    tryPlay();
+    const onInteract = () => {
+      tryPlay();
+      window.removeEventListener("pointerdown", onInteract);
+      window.removeEventListener("keydown", onInteract);
+    };
+    window.addEventListener("pointerdown", onInteract);
+    window.addEventListener("keydown", onInteract);
+    return () => {
+      window.removeEventListener("pointerdown", onInteract);
+      window.removeEventListener("keydown", onInteract);
+      a.pause();
+    };
+  }, []);
 
   const cards = [
     <Card1 key="1" name={name} />,
@@ -94,6 +116,43 @@ export function StoryPlayer({
           boxShadow: "0 30px 80px rgba(0,0,0,0.6)",
         }}
       >
+        <audio
+          ref={audioRef}
+          src="/bgm.mp3"
+          loop
+          autoPlay
+          preload="auto"
+        />
+        <button
+          onClick={() => {
+            const a = audioRef.current;
+            if (!a) return;
+            a.muted = !a.muted;
+            setMuted(a.muted);
+            if (!a.muted) a.play().catch(() => {});
+          }}
+          aria-label={muted ? "Unmute music" : "Mute music"}
+          style={{
+            position: "absolute",
+            top: 22,
+            right: 12,
+            zIndex: 20,
+            width: 32,
+            height: 32,
+            borderRadius: "50%",
+            background: "rgba(0,0,0,0.5)",
+            border: "1px solid rgba(255,244,230,0.4)",
+            color: "#FFF4E6",
+            fontSize: 14,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            cursor: "pointer",
+            padding: 0,
+          }}
+        >
+          {muted ? "🔇" : "🔊"}
+        </button>
         {/* Story card */}
         <motion.div
           drag="x"
