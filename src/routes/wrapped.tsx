@@ -1,18 +1,17 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { z } from "zod";
-import { zodValidator, fallback } from "@tanstack/zod-adapter";
 import { StoryPlayer } from "@/components/wrapped/StoryPlayer";
 import { wrappedConfig } from "@/config/stats";
 
-const searchSchema = z.object({
-  name: fallback(z.string(), "there").default("there"),
-  company: fallback(z.string(), wrappedConfig.companyName).default(
-    wrappedConfig.companyName,
-  ),
-});
+type WrappedSearch = { name: string; company: string };
 
 export const Route = createFileRoute("/wrapped")({
-  validateSearch: zodValidator(searchSchema),
+  validateSearch: (search: Record<string, unknown>): WrappedSearch => ({
+    name: typeof search.name === "string" ? search.name : "there",
+    company:
+      typeof search.company === "string"
+        ? search.company
+        : wrappedConfig.companyName,
+  }),
   head: () => ({
     meta: [
       { title: "Your Wrapped · Tal Boss" },
