@@ -198,7 +198,7 @@ export function Card2() {
               fontSize: 56,
               lineHeight: 0.95,
               margin: 0,
-              color: "#FFF4E6",
+              color: "#0A0A0A",
               letterSpacing: "-0.03em",
             }}
           >
@@ -207,7 +207,7 @@ export function Card2() {
           </h2>
         </FadeUp>
         <FadeUp delay={0.4}>
-          <p style={{ marginTop: 10, fontWeight: 700, fontSize: 22, color: "#FFD700" }}>
+          <p style={{ marginTop: 10, fontWeight: 800, fontSize: 22, color: "#B81D13" }}>
             Bigger than you think.
           </p>
         </FadeUp>
