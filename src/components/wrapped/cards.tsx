@@ -780,3 +780,158 @@ export function Card8() {
     </CardShell>
   );
 }
+
+/* ============================================================
+ * CARD FORM — last ask: name, department, best manager
+ * ============================================================ */
+import { useState } from "react";
+
+export function CardForm({ onSubmit }: { onSubmit: () => void }) {
+  const [name, setName] = useState("");
+  const [department, setDepartment] = useState("");
+  const [bestManager, setBestManager] = useState("");
+  const canSubmit = name.trim().length > 0;
+
+  const label: React.CSSProperties = {
+    display: "block",
+    fontWeight: 800,
+    fontSize: 12,
+    letterSpacing: "0.08em",
+    textTransform: "uppercase",
+    marginBottom: 8,
+    color: "#FFF4E6",
+    opacity: 0.85,
+  };
+  const input: React.CSSProperties = {
+    width: "100%",
+    padding: "14px 16px",
+    borderRadius: 12,
+    border: "2px solid rgba(255,244,230,0.3)",
+    background: "rgba(0,0,0,0.35)",
+    color: "#FFF4E6",
+    fontSize: 15,
+    fontWeight: 600,
+    fontFamily: "Inter, sans-serif",
+    outline: "none",
+    boxSizing: "border-box",
+  };
+
+  const stop = (e: React.SyntheticEvent) => e.stopPropagation();
+
+  return (
+    <CardShell background="#2A0A1A">
+      <CheckerboardBg colorA="#3A0F26" colorB="#2A0A1A" cell={80} />
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          padding: "60px 24px 32px",
+          display: "flex",
+          flexDirection: "column",
+          overflowY: "auto",
+        }}
+        onClick={stop}
+      >
+        <FadeUp>
+          <h2
+            style={{
+              fontWeight: 900,
+              fontSize: 32,
+              lineHeight: 1,
+              margin: 0,
+              color: "#FFF4E6",
+              letterSpacing: "-0.03em",
+            }}
+          >
+            One last thing.
+          </h2>
+          <p
+            style={{
+              marginTop: 8,
+              fontSize: 14,
+              fontWeight: 600,
+              color: "#FFD700",
+            }}
+          >
+            Tal Boss wants to know about you.
+          </p>
+        </FadeUp>
+
+        <form
+          onClick={stop}
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (!canSubmit) return;
+            onSubmit();
+          }}
+          style={{
+            marginTop: 22,
+            display: "flex",
+            flexDirection: "column",
+            gap: 14,
+          }}
+        >
+          <div>
+            <label style={label} htmlFor="cf-name">Your name</label>
+            <input
+              id="cf-name"
+              style={input}
+              placeholder="e.g. Yash"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              onClick={stop}
+              onPointerDown={stop}
+            />
+          </div>
+          <div>
+            <label style={label} htmlFor="cf-dept">Department</label>
+            <input
+              id="cf-dept"
+              style={input}
+              placeholder="e.g. Operations"
+              value={department}
+              onChange={(e) => setDepartment(e.target.value)}
+              onClick={stop}
+              onPointerDown={stop}
+            />
+          </div>
+          <div>
+            <label style={label} htmlFor="cf-mgr">
+              Best manager at {wrappedConfig.companyName}?
+            </label>
+            <input
+              id="cf-mgr"
+              style={input}
+              placeholder="Drop a name 👀"
+              value={bestManager}
+              onChange={(e) => setBestManager(e.target.value)}
+              onClick={stop}
+              onPointerDown={stop}
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={!canSubmit}
+            onClick={stop}
+            style={{
+              marginTop: 8,
+              padding: "16px 28px",
+              borderRadius: 999,
+              background: canSubmit ? "#FFD700" : "rgba(255,215,0,0.4)",
+              color: "#0A0A0A",
+              fontWeight: 900,
+              fontSize: 16,
+              border: "none",
+              cursor: canSubmit ? "pointer" : "not-allowed",
+              boxShadow: canSubmit ? "0 6px 0 #B81D13" : "none",
+              fontFamily: "Inter, sans-serif",
+            }}
+          >
+            Submit & finish →
+          </button>
+        </form>
+      </div>
+    </CardShell>
+  );
+}
