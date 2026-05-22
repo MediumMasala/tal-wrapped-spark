@@ -313,7 +313,7 @@ export function Card4() {
                 height: size,
                 border: `6px solid rgba(255,255,255,${0.15 + t * 0.6})`,
                 background:
-                  i === 9 ? "#FFF4E6" : `rgba(0, 70, 140, ${0.05 + t * 0.12})`,
+                  i === 9 ? "#003D7A" : `rgba(0, 70, 140, ${0.05 + t * 0.12})`,
                 transform: "rotate(45deg)",
               }}
             />
