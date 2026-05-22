@@ -749,17 +749,13 @@ export function Card8() {
         <FadeUp delay={0.6}>
           <h2
             style={{
-              display: "inline-block",
               fontWeight: 900,
-              fontSize: 30,
+              fontSize: 34,
               lineHeight: 1.05,
               margin: 0,
-              padding: "14px 18px",
-              borderRadius: 18,
-              background: "rgba(10,10,10,0.78)",
-              color: "#FFF4E6",
+              color: "#0A0A0A",
               letterSpacing: "-0.02em",
-              boxShadow: "6px 6px 0 #5A0A04",
+              textShadow: "2px 2px 0 #FFF4E6",
             }}
           >
             Your team is hiring.
