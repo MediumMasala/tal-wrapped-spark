@@ -421,10 +421,16 @@ export function Card5() {
         }}
       >
         <FadeUp delay={0.3}>
+        <div style={{
+          background: "#FFF4E6",
+          padding: "16px 18px",
+          borderRadius: 14,
+          boxShadow: "6px 6px 0 #0A0A0A",
+        }}>
           <h2
             style={{
               fontWeight: 900,
-              fontSize: 44,
+              fontSize: 38,
               lineHeight: 1,
               margin: 0,
               letterSpacing: "-0.02em",
@@ -432,11 +438,10 @@ export function Card5() {
           >
             Tal Boss has been watching.
           </h2>
-        </FadeUp>
-        <FadeUp delay={0.55}>
-          <p style={{ marginTop: 10, fontWeight: 700, fontSize: 18 }}>
+          <p style={{ marginTop: 8, marginBottom: 0, fontWeight: 700, fontSize: 16 }}>
             Impressed, honestly.
           </p>
+        </div>
         </FadeUp>
       </div>
     </motion.div>
