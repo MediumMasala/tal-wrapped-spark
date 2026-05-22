@@ -2,7 +2,12 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { StoryPlayer } from "@/components/wrapped/StoryPlayer";
 import { wrappedConfig } from "@/config/stats";
 
-type WrappedSearch = { name: string; company: string };
+type WrappedSearch = {
+  name: string;
+  company: string;
+  department?: string;
+  bestManager?: string;
+};
 
 export const Route = createFileRoute("/wrapped")({
   validateSearch: (search: Record<string, unknown>): WrappedSearch => ({
@@ -11,6 +16,10 @@ export const Route = createFileRoute("/wrapped")({
       typeof search.company === "string"
         ? search.company
         : wrappedConfig.companyName,
+    department:
+      typeof search.department === "string" ? search.department : undefined,
+    bestManager:
+      typeof search.bestManager === "string" ? search.bestManager : undefined,
   }),
   head: () => ({
     meta: [
