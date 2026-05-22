@@ -198,7 +198,7 @@ export function Card2() {
               fontSize: 56,
               lineHeight: 0.95,
               margin: 0,
-              color: "#FFF4E6",
+              color: "#0A0A0A",
               letterSpacing: "-0.03em",
             }}
           >
@@ -207,7 +207,7 @@ export function Card2() {
           </h2>
         </FadeUp>
         <FadeUp delay={0.4}>
-          <p style={{ marginTop: 10, fontWeight: 700, fontSize: 22, color: "#FFD700" }}>
+          <p style={{ marginTop: 10, fontWeight: 800, fontSize: 22, color: "#B81D13" }}>
             Bigger than you think.
           </p>
         </FadeUp>
@@ -313,7 +313,7 @@ export function Card4() {
                 height: size,
                 border: `6px solid rgba(255,255,255,${0.15 + t * 0.6})`,
                 background:
-                  i === 9 ? "#FFF4E6" : `rgba(0, 70, 140, ${0.05 + t * 0.12})`,
+                  i === 9 ? "#003D7A" : `rgba(0, 70, 140, ${0.05 + t * 0.12})`,
                 transform: "rotate(45deg)",
               }}
             />
@@ -421,10 +421,16 @@ export function Card5() {
         }}
       >
         <FadeUp delay={0.3}>
+        <div style={{
+          background: "#FFF4E6",
+          padding: "16px 18px",
+          borderRadius: 14,
+          boxShadow: "6px 6px 0 #0A0A0A",
+        }}>
           <h2
             style={{
               fontWeight: 900,
-              fontSize: 44,
+              fontSize: 38,
               lineHeight: 1,
               margin: 0,
               letterSpacing: "-0.02em",
@@ -432,11 +438,10 @@ export function Card5() {
           >
             Tal Boss has been watching.
           </h2>
-        </FadeUp>
-        <FadeUp delay={0.55}>
-          <p style={{ marginTop: 10, fontWeight: 700, fontSize: 18 }}>
+          <p style={{ marginTop: 8, marginBottom: 0, fontWeight: 700, fontSize: 16 }}>
             Impressed, honestly.
           </p>
+        </div>
         </FadeUp>
       </div>
     </motion.div>
@@ -750,6 +755,7 @@ export function Card8() {
               margin: 0,
               color: "#FFF4E6",
               letterSpacing: "-0.02em",
+              textShadow: "0 2px 12px rgba(0,0,0,0.6), 3px 3px 0 #5A0A04",
             }}
           >
             Your team is hiring.
