@@ -755,6 +755,7 @@ export function Card8() {
               margin: 0,
               color: "#FFF4E6",
               letterSpacing: "-0.02em",
+              textShadow: "0 2px 12px rgba(0,0,0,0.6), 3px 3px 0 #5A0A04",
             }}
           >
             Your team is hiring.
