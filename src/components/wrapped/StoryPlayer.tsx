@@ -29,6 +29,8 @@ export function StoryPlayer({
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement | null)?.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA") return;
       if (e.key === "ArrowRight") next();
       if (e.key === "ArrowLeft") prev();
       if (e.key === "Escape") onClose();
@@ -38,6 +40,7 @@ export function StoryPlayer({
   }, [onClose]);
 
   const onDragEnd = (_: unknown, info: PanInfo) => {
+    if (isForm) return;
     if (info.offset.x < -60) next();
     else if (info.offset.x > 60) prev();
   };
