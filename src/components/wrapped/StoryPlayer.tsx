@@ -1,7 +1,5 @@
 import { AnimatePresence, motion, type PanInfo } from "framer-motion";
 import { useEffect, useState } from "react";
-import { X } from "lucide-react";
-import { Mascot } from "./Mascot";
 import {
   Card1,
   Card2,
@@ -135,7 +133,7 @@ export function StoryPlayer({
           aria-label="Next"
         />
 
-        {/* Top chrome */}
+        {/* Top chrome: progress segments only */}
         <div
           style={{
             position: "absolute",
@@ -144,13 +142,10 @@ export function StoryPlayer({
             right: 0,
             padding: "10px 12px 8px",
             zIndex: 10,
-            background:
-              "linear-gradient(180deg, rgba(0,0,0,0.5) 0%, transparent 100%)",
             pointerEvents: "none",
           }}
         >
-          {/* Progress segments */}
-          <div style={{ display: "flex", gap: 4, marginBottom: 10 }}>
+          <div style={{ display: "flex", gap: 4 }}>
             {Array.from({ length: total }).map((_, i) => (
               <div
                 key={i}
@@ -159,54 +154,11 @@ export function StoryPlayer({
                   height: 3,
                   borderRadius: 2,
                   background:
-                    i <= index
-                      ? "#FFF4E6"
-                      : "rgba(255,244,230,0.25)",
+                    i <= index ? "#FFF4E6" : "rgba(255,244,230,0.25)",
                   transition: "background 0.3s ease",
                 }}
               />
             ))}
-          </div>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              pointerEvents: "auto",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 8,
-              }}
-            >
-              <Mascot size={32} />
-              <span
-                style={{
-                  color: "#FFF4E6",
-                  fontWeight: 900,
-                  fontSize: 13,
-                  letterSpacing: "0.02em",
-                }}
-              >
-                Tal Boss
-              </span>
-            </div>
-            <button
-              onClick={onClose}
-              aria-label="Close"
-              style={{
-                background: "transparent",
-                border: 0,
-                color: "#FFF4E6",
-                cursor: "pointer",
-                padding: 6,
-              }}
-            >
-              <X size={22} />
-            </button>
           </div>
         </div>
       </div>
