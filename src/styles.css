@@ -1,6 +1,7 @@
 @import "tailwindcss" source(none);
 @source "../src";
 @import "tw-animate-css";
+@import url("https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800;900&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap");
 
 @custom-variant dark (&:is(.dark *));
 
@@ -63,14 +64,20 @@
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(0.18 0.08 40);
-  --foreground: oklch(0.97 0.03 75);
-  --tal-orange: #FF6B35;
-  --tal-deep: #CC3D0E;
-  --tal-accent: #FFB800;
-  --tal-cream: #FFF4E6;
-  --tal-black: #0A0A0A;
-  --tal-cyan: #00C2FF;
+  --background: oklch(0.14 0.005 280);
+  --foreground: oklch(0.97 0.005 280);
+
+  /* Wrapped deck design tokens — restrained, editorial, single warm accent */
+  --w-bg:           #0E0E10;   /* Off-black canvas (never #000) */
+  --w-surface:      #16161A;   /* Card / surface fill */
+  --w-surface-2:    #1F1F24;   /* Inset chip */
+  --w-ink:          #F4F4F5;   /* Primary ink */
+  --w-ink-2:        #A1A1AA;   /* Secondary muted ink */
+  --w-ink-3:        #6B6B72;   /* Tertiary / captions */
+  --w-hairline:     rgba(244, 244, 245, 0.08);
+  --w-hairline-2:   rgba(244, 244, 245, 0.16);
+  --w-accent:       #E26A4A;   /* Single warm terracotta accent, sat < 80% */
+  --w-accent-soft:  rgba(226, 106, 74, 0.14);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.129 0.042 264.695);
   --popover: oklch(1 0 0);
@@ -147,4 +154,82 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
   }
+}
+
+/* ============================================================
+ *  Wrapped deck — taste-design system
+ *  Geist sans, Instrument Serif accent, Geist Mono numerics
+ * ============================================================ */
+.wrapped-deck {
+  font-family: "Geist", ui-sans-serif, system-ui, sans-serif;
+  color: var(--w-ink);
+  background: var(--w-bg);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "ss01", "ss02", "cv11";
+}
+.wrapped-deck .w-serif {
+  font-family: "Instrument Serif", "Geist", serif;
+  font-style: italic;
+  letter-spacing: -0.01em;
+}
+.wrapped-deck .w-mono {
+  font-family: "Geist Mono", ui-monospace, "SFMono-Regular", monospace;
+  font-feature-settings: "tnum", "zero";
+}
+.wrapped-deck .w-kicker {
+  font-family: "Geist Mono", ui-monospace, monospace;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--w-ink-2);
+}
+
+/* Perpetual micro-motion */
+@keyframes w-pulse-dot {
+  0%, 100% { opacity: 0.35; transform: scale(1); }
+  50%      { opacity: 1;    transform: scale(1.15); }
+}
+@keyframes w-shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+@keyframes w-caret {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+@keyframes w-grain {
+  0%, 100% { transform: translate(0, 0); }
+  20%      { transform: translate(-1%, 1%); }
+  40%      { transform: translate(1%, -1%); }
+  60%      { transform: translate(-2%, -1%); }
+  80%      { transform: translate(2%, 2%); }
+}
+.w-pulse-dot { animation: w-pulse-dot 2.6s ease-in-out infinite; }
+.w-caret { display: inline-block; animation: w-caret 1.05s steps(1) infinite; }
+
+/* Subtle film grain on a fixed pseudo-element — perf-safe */
+.w-grain::after {
+  content: "";
+  position: absolute; inset: -50%;
+  pointer-events: none;
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.6 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  animation: w-grain 8s steps(5) infinite;
+}
+
+/* Hairline shimmer for ascending stats */
+.w-shimmer-line {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--w-hairline-2) 35%,
+    var(--w-accent) 50%,
+    var(--w-hairline-2) 65%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: w-shimmer 4s linear infinite;
 }
