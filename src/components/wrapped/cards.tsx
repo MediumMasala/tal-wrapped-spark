@@ -940,3 +940,248 @@ export function CardForm({ onSubmit }: { onSubmit: () => void }) {
     </CardShell>
   );
 }
+
+/* ============================================================
+ * CARD FIRECRACKER — MAU reveal with rocket + burst
+ * ============================================================ */
+export function CardFirecracker() {
+  const fc = wrappedConfig.firecracker;
+  const particles = Array.from({ length: 28 }, (_, i) => {
+    const angle = (i / 28) * Math.PI * 2;
+    const distance = 120 + ((i * 37) % 60);
+    const colors = ["#FFB800", "#FF6B35", "#FFF4E6"];
+    return {
+      id: i,
+      x: Math.cos(angle) * distance,
+      y: Math.sin(angle) * distance,
+      color: colors[i % 3],
+      rotation: (angle * 180) / Math.PI + 90,
+    };
+  });
+
+  return (
+    <CardShell background="radial-gradient(circle at 50% 40%, #E04A14 0%, #CC3D0E 60%, #8A2408 100%)">
+      {/* Ball ascent */}
+      <motion.div
+        initial={{ y: "100vh", opacity: 1, scale: 1 }}
+        animate={{ y: "25vh", opacity: [1, 1, 0], scale: [1, 1.2, 0] }}
+        transition={{
+          duration: 1.4,
+          times: [0, 0.85, 1],
+          ease: [0.4, 0, 0.2, 1],
+        }}
+        style={{
+          position: "absolute",
+          left: "50%",
+          top: 0,
+          width: 16,
+          height: 16,
+          marginLeft: -8,
+          borderRadius: "50%",
+          background:
+            "radial-gradient(circle, #FFF4E6 0%, #FFB800 60%, #FF6B35 100%)",
+          boxShadow:
+            "0 0 16px 4px #FFB800, 0 0 32px 8px rgba(255,107,53,0.6)",
+        }}
+      >
+        {/* Trail */}
+        <div
+          style={{
+            position: "absolute",
+            left: "50%",
+            top: 8,
+            marginLeft: -2,
+            width: 4,
+            height: 120,
+            background:
+              "linear-gradient(to bottom, #FFB800, rgba(255,107,53,0.4) 60%, transparent)",
+            filter: "blur(2px)",
+            borderRadius: 4,
+          }}
+        />
+      </motion.div>
+
+      {/* Burst particles */}
+      <div
+        style={{
+          position: "absolute",
+          left: "50%",
+          top: "25vh",
+          width: 0,
+          height: 0,
+        }}
+      >
+        {particles.map((p) => (
+          <motion.div
+            key={p.id}
+            initial={{ x: 0, y: 0, scale: 0, opacity: 0 }}
+            animate={{
+              x: p.x,
+              y: p.y,
+              scale: [0, 1.5, 0],
+              opacity: [0, 1, 0],
+            }}
+            transition={{
+              duration: 0.9,
+              delay: 1.2,
+              times: [0, 0.4, 1],
+              ease: "easeOut",
+            }}
+            style={{
+              position: "absolute",
+              left: 0,
+              top: 0,
+              width: 0,
+              height: 0,
+              borderLeft: "4px solid transparent",
+              borderRight: "4px solid transparent",
+              borderBottom: `12px solid ${p.color}`,
+              transform: `rotate(${p.rotation}deg)`,
+              transformOrigin: "center",
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Content */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: "0 24px",
+          textAlign: "center",
+        }}
+      >
+        <motion.div
+          initial={{ opacity: 0, scale: 0.7 }}
+          animate={{ opacity: 1, scale: [0.7, 1.05, 1] }}
+          transition={{ duration: 0.6, delay: 2.0, ease }}
+          style={{
+            fontFamily: "Inter, sans-serif",
+            fontWeight: 900,
+            fontSize: "clamp(48px, 13vw, 76px)",
+            letterSpacing: "-0.04em",
+            color: "#FFF4E6",
+            lineHeight: 1,
+            textShadow: "0 4px 24px rgba(0,0,0,0.4)",
+          }}
+        >
+          {fc.bigNumber}
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 2.4, ease }}
+          style={{
+            marginTop: 12,
+            fontFamily: "Inter, sans-serif",
+            fontWeight: 500,
+            fontSize: 18,
+            color: "#FFF4E6",
+            opacity: 0.9,
+          }}
+        >
+          {fc.label}
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5, delay: 2.6, ease }}
+          style={{ marginTop: 28 }}
+        >
+          <motion.div
+            animate={{ scale: [1, 1.02, 1] }}
+            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+            style={{ position: "relative" }}
+          >
+            <KarnatakaOutline />
+          </motion.div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 3.0, ease }}
+          style={{
+            marginTop: 20,
+            fontFamily: "Inter, sans-serif",
+            fontWeight: 900,
+            fontSize: 22,
+            color: "#FFF4E6",
+            letterSpacing: "-0.02em",
+          }}
+        >
+          {fc.kicker}
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 3.2, ease }}
+          style={{
+            marginTop: 6,
+            fontFamily: "Inter, sans-serif",
+            fontWeight: 500,
+            fontSize: 14,
+            color: "#FFF4E6",
+            opacity: 0.85,
+            maxWidth: 280,
+          }}
+        >
+          {fc.kickerSub}{" "}
+          <span style={{ opacity: 0.7 }}>
+            (Population: ~{fc.comparisonPopulation}.)
+          </span>
+        </motion.div>
+      </div>
+    </CardShell>
+  );
+}
+
+function KarnatakaOutline() {
+  // Stylized Karnataka outline. Not geographically precise — recognizable silhouette.
+  return (
+    <svg
+      width={200}
+      height={180}
+      viewBox="0 0 200 180"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="Karnataka, India"
+    >
+      <path
+        d="M70 10 L95 8 L120 14 L135 22 L150 36 L162 52 L168 70 L170 92 L162 112 L150 130 L138 146 L122 158 L104 166 L86 170 L72 168 L60 158 L52 144 L48 128 L42 112 L36 96 L30 80 L28 64 L34 48 L44 32 L56 20 Z"
+        stroke="#FFF4E6"
+        strokeWidth={2}
+        strokeLinejoin="round"
+        fill="rgba(255,244,230,0.06)"
+      />
+      {/* Mysuru marker (south of state) */}
+      <circle cx={92} cy={150} r={4} fill="#FFF4E6" />
+      <circle
+        cx={92}
+        cy={150}
+        r={8}
+        fill="none"
+        stroke="#FFF4E6"
+        strokeWidth={1}
+        opacity={0.5}
+      />
+      <text
+        x={104}
+        y={154}
+        fill="#FFF4E6"
+        fontSize={11}
+        fontFamily="Inter, sans-serif"
+        fontWeight={600}
+      >
+        Mysuru
+      </text>
+    </svg>
+  );
+}

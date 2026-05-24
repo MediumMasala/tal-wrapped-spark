@@ -10,6 +10,15 @@ export const wrappedConfig = {
     growth: "240%",
     newTeammates: 18,
   },
+  firecracker: {
+    bigNumber: "1,200,000",
+    label: "Monthly active users.",
+    comparisonState: "Karnataka",
+    comparisonCity: "Mysuru",
+    comparisonPopulation: "990,000",
+    kicker: "Bigger than Mysuru.",
+    kickerSub: "And honestly, getting close to Mangalore.",
+  },
   topCompanies: [
     { name: "Zomato", tagline: "Order in, anywhere", logo: "/logos/zomato.svg" },
     { name: "Swiggy", tagline: "Faster than your boss replies", logo: "/logos/swiggy.svg" },
