@@ -64,7 +64,7 @@ export function StoryPlayer({
       style={{
         position: "fixed",
         inset: 0,
-        background: "#000",
+        background: "#08080A",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -78,8 +78,8 @@ export function StoryPlayer({
           position: "absolute",
           inset: 0,
           background:
-            "radial-gradient(circle at 50% 50%, #3a0e02 0%, #0A0A0A 70%)",
-          filter: "blur(40px)",
+            "radial-gradient(circle at 50% 50%, rgba(226,106,74,0.12) 0%, #08080A 65%)",
+          filter: "blur(60px)",
         }}
       />
 
@@ -90,10 +90,10 @@ export function StoryPlayer({
           maxWidth: 420,
           aspectRatio: "9 / 16",
           maxHeight: "100dvh",
-          background: "#0A0A0A",
+          background: "#0E0E10",
           overflow: "hidden",
           borderRadius: 0,
-          boxShadow: "0 30px 80px rgba(0,0,0,0.6)",
+          boxShadow: "0 40px 100px rgba(0,0,0,0.7), 0 0 0 1px rgba(244,244,245,0.04)",
         }}
       >
         {/* Story card */}
@@ -151,22 +151,26 @@ export function StoryPlayer({
             top: 0,
             left: 0,
             right: 0,
-            padding: "10px 12px 8px",
+            padding: "12px 14px 8px",
             zIndex: 10,
             pointerEvents: "none",
           }}
         >
-          <div style={{ display: "flex", gap: 4 }}>
+          <div style={{ display: "flex", gap: 3 }}>
             {Array.from({ length: total }).map((_, i) => (
               <div
                 key={i}
                 style={{
                   flex: 1,
-                  height: 3,
-                  borderRadius: 2,
+                  height: 2,
+                  borderRadius: 1,
                   background:
-                    i <= index ? "#FFF4E6" : "rgba(255,244,230,0.25)",
-                  transition: "background 0.3s ease",
+                    i < index
+                      ? "rgba(244,244,245,0.9)"
+                      : i === index
+                        ? "#E26A4A"
+                        : "rgba(244,244,245,0.12)",
+                  transition: "background 0.4s ease",
                 }}
               />
             ))}

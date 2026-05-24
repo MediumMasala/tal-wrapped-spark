@@ -1,36 +1,47 @@
-import { motion } from "framer-motion";
+import { motion, type Transition } from "framer-motion";
 import { useState } from "react";
-import { Mascot } from "./Mascot";
 import { wrappedConfig } from "@/config/stats";
-import {
-  CheckerboardBg,
-  PixelRhombusFrame,
-  PixelStairs,
-  PixelStripeRow,
-  SpikyBurst,
-  StackedFan,
-  StairText,
-} from "./primitives";
 
-const ease = [0.65, 0, 0.35, 1] as const;
+/* ============================================================
+ *  Wrapped — editorial deck
+ *  Off-black canvas · Geist + Instrument Serif · single
+ *  terracotta accent · spring physics · perpetual micro-motion.
+ * ============================================================ */
 
-function CardShell({
+const spring: Transition = { type: "spring", stiffness: 110, damping: 22, mass: 0.9 };
+const springSoft: Transition = { type: "spring", stiffness: 80, damping: 24 };
+
+const C = {
+  bg: "var(--w-bg)",
+  surface: "var(--w-surface)",
+  surface2: "var(--w-surface-2)",
+  ink: "var(--w-ink)",
+  ink2: "var(--w-ink-2)",
+  ink3: "var(--w-ink-3)",
+  hair: "var(--w-hairline)",
+  hair2: "var(--w-hairline-2)",
+  accent: "var(--w-accent)",
+  accentSoft: "var(--w-accent-soft)",
+};
+
+function Shell({
   children,
-  background,
-  color = "#FFF4E6",
+  background = C.bg,
+  grain = true,
 }: {
   children: React.ReactNode;
-  background: string;
-  color?: string;
+  background?: string;
+  grain?: boolean;
 }) {
   return (
     <div
+      className={"wrapped-deck" + (grain ? " w-grain" : "")}
       style={{
         position: "absolute",
         inset: 0,
         overflow: "hidden",
         background,
-        color,
+        color: C.ink,
       }}
     >
       {children}
@@ -38,610 +49,1086 @@ function CardShell({
   );
 }
 
-function FadeUp({
-  children,
-  delay = 0,
-}: {
-  children: React.ReactNode;
-  delay?: number;
-}) {
+function Kicker({ children, accent = false }: { children: React.ReactNode; accent?: boolean }) {
+  return (
+    <div
+      className="w-kicker"
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        gap: 8,
+        color: accent ? C.accent : C.ink2,
+      }}
+    >
+      <span
+        className="w-pulse-dot"
+        style={{
+          width: 6,
+          height: 6,
+          borderRadius: 999,
+          background: accent ? C.accent : C.ink2,
+          display: "inline-block",
+        }}
+      />
+      {children}
+    </div>
+  );
+}
+
+function Hairline({ delay = 0 }: { delay?: number }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay, ease }}
-    >
-      {children}
-    </motion.div>
+      initial={{ scaleX: 0, opacity: 0 }}
+      animate={{ scaleX: 1, opacity: 1 }}
+      transition={{ ...springSoft, delay }}
+      style={{
+        height: 1,
+        width: "100%",
+        background: C.hair2,
+        transformOrigin: "left",
+      }}
+    />
   );
 }
 
-/* ============================================================
- * CARD 1 — Title: deep red + giant clipped "2025"
- * ============================================================ */
-export function Card1({ name }: { name: string }) {
-  const fragments = Array.from({ length: 40 });
+function PageNo({ n, of = 9 }: { n: number; of?: number }) {
   return (
-    <CardShell background="#B81D13">
-      {/* Top pixel stripe */}
-      <div style={{ position: "absolute", top: 0, left: 0, right: 0 }}>
-        <PixelStripeRow color="#FF1B6B" alt="#FFCC00" height={20} unit={20} />
-      </div>
-      {/* Bottom pixel stripe */}
-      <div style={{ position: "absolute", bottom: 0, left: 0, right: 0 }}>
-        <PixelStripeRow color="#FF1B6B" alt="#FFCC00" height={20} unit={20} />
-      </div>
+    <div
+      style={{
+        position: "absolute",
+        bottom: 20,
+        right: 22,
+        display: "flex",
+        alignItems: "center",
+        gap: 8,
+        color: C.ink3,
+      }}
+      className="w-mono"
+    >
+      <span style={{ fontSize: 11, letterSpacing: "0.1em" }}>
+        {String(n).padStart(2, "0")} / {String(of).padStart(2, "0")}
+      </span>
+    </div>
+  );
+}
 
-      {/* Giant clipped "2025" with stair-stepped pink-orange shadow */}
+function DeckMark() {
+  return (
+    <div
+      style={{
+        position: "absolute",
+        top: 22,
+        left: 22,
+        display: "flex",
+        alignItems: "center",
+        gap: 8,
+        color: C.ink2,
+      }}
+      className="w-kicker"
+    >
+      <span
+        style={{
+          width: 14,
+          height: 14,
+          borderRadius: 3,
+          background: C.accent,
+          display: "inline-block",
+        }}
+      />
+      {wrappedConfig.companyName} · Wrapped {wrappedConfig.year}
+    </div>
+  );
+}
+
+/* ====================================================================
+ * CARD 1 — Title.  Editorial cover: oversized counter, serif italic
+ * personal greeting, asymmetric left-aligned, accent block-quote bar.
+ * ==================================================================== */
+export function Card1({ name }: { name: string }) {
+  const yearStr = String(wrappedConfig.year);
+  return (
+    <Shell>
+      <DeckMark />
+      <PageNo n={1} />
+
+      {/* Counter — bottom-right typographic anchor */}
       <motion.div
-        initial={{ scale: 0.7, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.6, ease }}
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 0.08, y: 0 }}
+        transition={{ ...spring, delay: 0.1 }}
+        className="w-mono"
         style={{
           position: "absolute",
-          inset: 0,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          overflow: "visible",
+          right: -8,
+          bottom: 60,
+          fontSize: "clamp(220px, 55vw, 420px)",
+          fontWeight: 500,
+          lineHeight: 0.85,
+          letterSpacing: "-0.06em",
+          color: C.ink,
+          pointerEvents: "none",
         }}
       >
-        <StairText
-          text={String(wrappedConfig.year)}
-          color="#FFCC00"
-          shadow="#FF6BA1"
-          layers={14}
-          step={10}
-          fontSize="clamp(220px, 42vw, 480px)"
-        />
+        {yearStr}
       </motion.div>
 
-      {/* Fragment explosion on exit */}
-      <motion.div
-        aria-hidden
-        initial={{ opacity: 0 }}
-        exit={{ opacity: 1 }}
-        transition={{ duration: 0 }}
-        style={{ position: "absolute", inset: 0, pointerEvents: "none" }}
+      {/* Top-left content block */}
+      <div
+        style={{
+          position: "absolute",
+          left: 28,
+          right: 28,
+          top: 70,
+        }}
       >
-        {fragments.map((_, i) => {
-          const angle = (i / fragments.length) * Math.PI * 2;
-          const dist = 300 + Math.random() * 200;
-          return (
-            <motion.div
-              key={i}
-              initial={{ x: 0, y: 0, opacity: 0, rotate: 0 }}
-              exit={{
-                x: Math.cos(angle) * dist,
-                y: Math.sin(angle) * dist,
-                opacity: [0, 1, 0],
-                rotate: Math.random() * 360,
-              }}
-              transition={{ duration: 0.8, ease }}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ ...spring, delay: 0.15 }}
+        >
+          <Kicker accent>Annual review · 365 days</Kicker>
+        </motion.div>
+      </div>
+
+      {/* Centered-left headline */}
+      <div
+        style={{
+          position: "absolute",
+          left: 28,
+          right: 28,
+          top: "32%",
+          maxWidth: 360,
+        }}
+      >
+        <motion.div
+          initial={{ opacity: 0, x: -16 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ ...spring, delay: 0.25 }}
+          style={{ display: "flex" }}
+        >
+          <span
+            style={{
+              width: 3,
+              background: C.accent,
+              marginRight: 16,
+              borderRadius: 1,
+            }}
+          />
+          <div>
+            <h1
               style={{
-                position: "absolute",
-                left: "50%",
-                top: "50%",
-                width: 28,
-                height: 14,
-                background: i % 2 ? "#FFCC00" : "#FF6BA1",
-                transform: "skewX(-18deg)",
+                margin: 0,
+                fontSize: 44,
+                fontWeight: 700,
+                lineHeight: 1.02,
+                letterSpacing: "-0.035em",
+                color: C.ink,
               }}
-            />
-          );
-        })}
-      </motion.div>
-
-      <div style={{ position: "absolute", left: 24, right: 24, bottom: 90 }}>
-        <FadeUp delay={0.2}>
-          <h1
-            style={{
-              fontWeight: 900,
-              fontSize: 36,
-              lineHeight: 1.05,
-              margin: 0,
-              color: "#FFF4E6",
-              letterSpacing: "-0.02em",
-            }}
-          >
-            Hey {name},<br />
-            {wrappedConfig.companyName}'s year is wrapped.
-          </h1>
-        </FadeUp>
-        <FadeUp delay={0.5}>
-          <p style={{ marginTop: 10, fontWeight: 600, fontSize: 16, opacity: 0.9 }}>
-            Tap to see what you helped build.
-          </p>
-        </FadeUp>
+            >
+              Hey{" "}
+              <span className="w-serif" style={{ color: C.accent, fontWeight: 400 }}>
+                {name}
+              </span>
+              ,
+              <br />
+              the year{" "}
+              <span className="w-serif" style={{ fontWeight: 400 }}>
+                we built
+              </span>
+              <br />
+              together.
+            </h1>
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.7, duration: 0.5 }}
+              style={{
+                marginTop: 22,
+                fontSize: 14,
+                lineHeight: 1.5,
+                color: C.ink2,
+                maxWidth: 280,
+              }}
+            >
+              {wrappedConfig.companyName} in nine chapters. Tap, swipe, hold —
+              this is how the year actually felt.
+            </motion.p>
+          </div>
+        </motion.div>
       </div>
 
-      <motion.div
-        style={{ position: "absolute", right: 16, bottom: 24 }}
-        initial={{ y: 80, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.6, duration: 0.6, ease }}
-      >
-        <Mascot size={110} rounded={false} />
-      </motion.div>
-    </CardShell>
+      {/* Bottom hairline reveal */}
+      <div style={{ position: "absolute", left: 28, right: 28, bottom: 60 }}>
+        <Hairline delay={0.55} />
+        <motion.div
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ ...spring, delay: 0.7 }}
+          style={{
+            marginTop: 14,
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "baseline",
+          }}
+        >
+          <span className="w-kicker">Tap to begin</span>
+          <span className="w-kicker" style={{ color: C.ink3 }}>
+            <span className="w-caret">▍</span>
+          </span>
+        </motion.div>
+      </div>
+    </Shell>
   );
 }
 
-/* ============================================================
- * CARD 2 — Magenta + diagonal yellow parallelogram fan
- * ============================================================ */
-export function Card2() {
-  return (
-    <CardShell background="#FF1B6B">
-      <motion.div
-        initial={{ x: -200, y: 200, scale: 0.5, opacity: 0 }}
-        animate={{ x: 0, y: 0, scale: 1, opacity: 1 }}
-        exit={{ scaleY: 1.8, opacity: 0 }}
-        transition={{ duration: 0.7, ease }}
-        style={{ position: "absolute", left: "5%", top: "10%" }}
-      >
-        <StackedFan
-          count={10}
-          width={340}
-          height={520}
-          colorFrom="#FFD700"
-          colorTo="#FFCC00"
-        />
-      </motion.div>
+/* ====================================================================
+ * CARD FIRECRACKER — MAU reveal.  Restrained: a thin ascending rule
+ * snaps up to a hairline burst, then a giant Geist-Mono numeric drops
+ * in with staggered subtitle.  Karnataka outline replaced by a single
+ * geographic comparison row with a small marker.
+ * ==================================================================== */
+export function CardFirecracker() {
+  const fc = wrappedConfig.firecracker;
+  const particles = Array.from({ length: 14 }, (_, i) => {
+    const angle = (i / 14) * Math.PI * 2;
+    const dist = 140;
+    return { id: i, x: Math.cos(angle) * dist, y: Math.sin(angle) * dist };
+  });
 
-      <div style={{ position: "absolute", left: 24, right: 24, bottom: 90 }}>
-        <FadeUp delay={0.2}>
-          <h2
-            style={{
-              fontWeight: 900,
-              fontSize: 56,
-              lineHeight: 0.95,
-              margin: 0,
-              color: "#0A0A0A",
-              letterSpacing: "-0.03em",
-            }}
-          >
-            Big year for<br />
-            {wrappedConfig.companyName}.
-          </h2>
-        </FadeUp>
-        <FadeUp delay={0.4}>
-          <p style={{ marginTop: 10, fontWeight: 800, fontSize: 22, color: "#B81D13" }}>
-            Bigger than you think.
-          </p>
-        </FadeUp>
-      </div>
-    </CardShell>
-  );
-}
-
-/* ============================================================
- * CARD 3 — Bright yellow + black type + red rhombus pixel border
- * ============================================================ */
-export function Card3() {
   return (
-    <CardShell background="#FFD700" color="#0A0A0A">
+    <Shell>
+      <DeckMark />
+      <PageNo n={2} />
+
+      {/* Ascending rule */}
       <motion.div
-        initial={{ scale: 0.6, opacity: 0, rotate: 35 }}
-        animate={{ scale: 1, opacity: 1, rotate: 0 }}
-        exit={{ scale: 0, opacity: 0 }}
-        transition={{ duration: 0.6, ease }}
+        initial={{ height: 0, opacity: 0 }}
+        animate={{ height: ["0vh", "55vh"], opacity: [0, 1] }}
+        transition={{ duration: 1.0, ease: [0.4, 0, 0.2, 1], delay: 0.1 }}
         style={{
           position: "absolute",
           left: "50%",
-          top: "44%",
-          transform: "translate(-50%, -50%)",
+          bottom: "30%",
+          width: 1,
+          marginLeft: -0.5,
+          background: `linear-gradient(to top, transparent, ${C.accent})`,
+          transformOrigin: "bottom",
         }}
-      >
-        <PixelRhombusFrame size={280} color="#B81D13" step={7} steps={6} />
-      </motion.div>
+      />
 
+      {/* Burst — small radial rays */}
       <div
         style={{
           position: "absolute",
-          inset: 0,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          padding: "0 28px",
-          textAlign: "center",
+          left: "50%",
+          top: "30%",
+          width: 0,
+          height: 0,
         }}
       >
-        <div>
-          <FadeUp delay={0.3}>
-            <div
-              style={{
-                fontWeight: 900,
-                fontSize: "clamp(160px, 32vw, 280px)",
-                lineHeight: 0.9,
-                letterSpacing: "-0.06em",
-                color: "#0A0A0A",
-              }}
-            >
-              {wrappedConfig.stats.hires}
-            </div>
-          </FadeUp>
-          <FadeUp delay={0.55}>
-            <div style={{ fontWeight: 900, fontSize: 26, marginTop: 4 }}>
-              new people hired.
-            </div>
-          </FadeUp>
-          <FadeUp delay={0.75}>
-            <div style={{ fontWeight: 600, fontSize: 16, marginTop: 6, opacity: 0.75 }}>
-              That's a whole new floor.
-            </div>
-          </FadeUp>
-        </div>
-      </div>
-
-      <div style={{ position: "absolute", right: 12, bottom: 18 }}>
-        <Mascot size={84} />
-      </div>
-    </CardShell>
-  );
-}
-
-/* ============================================================
- * CARD 4 — Electric blue + receding stair pyramid tunnel
- * ============================================================ */
-export function Card4() {
-  return (
-    <CardShell background="#00A6FF">
-      {/* Receding pyramid: nested rotated squares from huge to tiny */}
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        {Array.from({ length: 10 }).map((_, i) => {
-          const size = 480 - i * 42;
-          const t = i / 10;
-          return (
-            <motion.div
-              key={i}
-              initial={{ scale: 0.4, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ delay: i * 0.04, duration: 0.5, ease }}
-              style={{
-                position: "absolute",
-                width: size,
-                height: size,
-                border: `6px solid rgba(255,255,255,${0.15 + t * 0.6})`,
-                background:
-                  i === 9 ? "#003D7A" : `rgba(0, 70, 140, ${0.05 + t * 0.12})`,
-                transform: "rotate(45deg)",
-              }}
-            />
-          );
-        })}
-      </div>
-
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          padding: "0 28px",
-          textAlign: "center",
-        }}
-      >
-        <FadeUp delay={0.5}>
-          <div
-            style={{
-              fontWeight: 900,
-              fontSize: "clamp(80px, 18vw, 130px)",
-              color: "#FFF4E6",
-              letterSpacing: "-0.05em",
-              lineHeight: 1,
-              textShadow: "4px 4px 0 #003D7A",
+        {particles.map((p) => (
+          <motion.div
+            key={p.id}
+            initial={{ x: 0, y: 0, opacity: 0, scale: 0 }}
+            animate={{ x: p.x, y: p.y, opacity: [0, 1, 0], scale: [0, 1, 0.6] }}
+            transition={{
+              duration: 0.9,
+              delay: 1.05,
+              ease: [0.2, 0.7, 0.3, 1],
             }}
-          >
-            {wrappedConfig.stats.customers}
-          </div>
-        </FadeUp>
-        <FadeUp delay={0.7}>
-          <div
             style={{
-              fontWeight: 900,
-              fontSize: 22,
-              marginTop: 14,
-              color: "#FFF4E6",
-              maxWidth: 260,
+              position: "absolute",
+              width: 2,
+              height: 18,
+              marginLeft: -1,
+              marginTop: -9,
+              background: C.accent,
+              transformOrigin: "center",
+              transform: `rotate(${(p.id / 14) * 360}deg) translateY(-30px)`,
+              borderRadius: 1,
             }}
-          >
-            customers chose {wrappedConfig.companyName}.
-          </div>
-        </FadeUp>
-        <FadeUp delay={0.9}>
-          <div style={{ fontWeight: 600, fontSize: 15, marginTop: 12, color: "#E0F4FF" }}>
-            And they keep coming back.
-          </div>
-        </FadeUp>
-      </div>
-    </CardShell>
-  );
-}
-
-/* ============================================================
- * CARD 5 — Yellow+lime checkerboard + black spiky burst + mascot
- * Radial wipe enter.
- * ============================================================ */
-export function Card5() {
-  return (
-    <motion.div
-      initial={{ clipPath: "circle(0% at 50% 50%)" }}
-      animate={{ clipPath: "circle(140% at 50% 50%)" }}
-      exit={{ clipPath: "polygon(0 0, 100% 0, 100% 0, 0 0)" }}
-      transition={{ duration: 0.6, ease }}
-      style={{ position: "absolute", inset: 0, overflow: "hidden" }}
-    >
-      <CheckerboardBg colorA="#FFD700" colorB="#9FE870" cell={80} />
-
-      <motion.div
-        style={{
-          position: "absolute",
-          inset: 0,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-        animate={{ rotate: [-6, 6, -6] }}
-        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-      >
-        <SpikyBurst size={420} spikes={16} color="#0A0A0A" />
-      </motion.div>
-
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <Mascot size={220} rounded={false} bob={true} />
-      </div>
-
-      <div
-        style={{
-          position: "absolute",
-          left: 24,
-          right: 24,
-          bottom: 90,
-          color: "#0A0A0A",
-        }}
-      >
-        <FadeUp delay={0.3}>
-        <div style={{
-          background: "#FFF4E6",
-          padding: "16px 18px",
-          borderRadius: 14,
-          boxShadow: "6px 6px 0 #0A0A0A",
-        }}>
-          <h2
-            style={{
-              fontWeight: 900,
-              fontSize: 38,
-              lineHeight: 1,
-              margin: 0,
-              letterSpacing: "-0.02em",
-            }}
-          >
-            Tal Boss has been watching.
-          </h2>
-          <p style={{ marginTop: 8, marginBottom: 0, fontWeight: 700, fontSize: 16 }}>
-            Impressed, honestly.
-          </p>
-        </div>
-        </FadeUp>
-      </div>
-    </motion.div>
-  );
-}
-
-/* ============================================================
- * CARD 6 — Deep magenta + opposing cream stair-stepped corners
- * ============================================================ */
-export function Card6() {
-  return (
-    <motion.div
-      initial={{ clipPath: "polygon(0 0, 0 0, 0 100%, 0 100%)" }}
-      animate={{ clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)" }}
-      exit={{ opacity: 0, scale: 0.9 }}
-      transition={{ duration: 0.7, ease }}
-      style={{ position: "absolute", inset: 0, overflow: "hidden" }}
-    >
-      <CardShell background="#D90368">
-        <motion.div
-          initial={{ x: 200, y: -200, opacity: 0 }}
-          animate={{ x: 0, y: 0, opacity: 1 }}
-          transition={{ duration: 0.6, ease, delay: 0.1 }}
-          style={{ position: "absolute", top: -20, right: -40 }}
-        >
-          <PixelStairs
-            width={240}
-            height={120}
-            color="#FFF4E6"
-            shadow="#7A0040"
-            direction="bl"
-            steps={12}
-            step={8}
           />
-        </motion.div>
+        ))}
         <motion.div
-          initial={{ x: -200, y: 200, opacity: 0 }}
-          animate={{ x: 0, y: 0, opacity: 1 }}
-          transition={{ duration: 0.6, ease, delay: 0.2 }}
-          style={{ position: "absolute", bottom: 80, left: -40 }}
-        >
-          <PixelStairs
-            width={240}
-            height={120}
-            color="#FFF4E6"
-            shadow="#7A0040"
-            direction="tr"
-            steps={12}
-            step={8}
-          />
-        </motion.div>
-
-        <div
+          initial={{ opacity: 0, scale: 0 }}
+          animate={{ opacity: [0, 1, 0], scale: [0, 2.5, 0] }}
+          transition={{ duration: 0.7, delay: 1.05 }}
           style={{
             position: "absolute",
-            inset: 0,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: "0 28px",
-            textAlign: "center",
+            width: 8,
+            height: 8,
+            marginLeft: -4,
+            marginTop: -4,
+            borderRadius: "50%",
+            background: C.accent,
+            boxShadow: `0 0 20px ${C.accent}`,
+          }}
+        />
+      </div>
+
+      {/* Content */}
+      <div
+        style={{
+          position: "absolute",
+          left: 28,
+          right: 28,
+          top: "44%",
+        }}
+      >
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ ...spring, delay: 1.7 }}
+        >
+          <Kicker accent>Reach · monthly active users</Kicker>
+        </motion.div>
+        <motion.div
+          className="w-mono"
+          initial={{ opacity: 0, y: 24, filter: "blur(8px)" }}
+          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+          transition={{ ...spring, delay: 1.85 }}
+          style={{
+            marginTop: 18,
+            fontSize: "clamp(64px, 16vw, 96px)",
+            fontWeight: 500,
+            lineHeight: 0.95,
+            letterSpacing: "-0.06em",
+            color: C.ink,
           }}
         >
-          <div>
-            <FadeUp delay={0.4}>
-              <div style={{ fontWeight: 700, fontSize: 16, opacity: 0.85, color: "#FFF4E6" }}>
-                Biggest month
-              </div>
-            </FadeUp>
-            <FadeUp delay={0.55}>
-              <div
-                style={{
-                  fontWeight: 900,
-                  fontSize: "clamp(80px, 18vw, 140px)",
-                  lineHeight: 1,
-                  letterSpacing: "-0.04em",
-                  color: "#FFF4E6",
-                  textShadow: "5px 5px 0 #7A0040",
-                }}
-              >
-                {wrappedConfig.stats.biggestMonth}
-              </div>
-            </FadeUp>
-            <FadeUp delay={0.75}>
-              <div
-                style={{
-                  fontWeight: 900,
-                  fontSize: 26,
-                  marginTop: 12,
-                  color: "#FFD700",
-                }}
-              >
-                {wrappedConfig.stats.biggestMonthValue}
-              </div>
-            </FadeUp>
-            <FadeUp delay={0.9}>
-              <div style={{ fontWeight: 600, fontSize: 15, marginTop: 14, color: "#FFF4E6", opacity: 0.9 }}>
-                Where do you find the time?
-              </div>
-            </FadeUp>
-          </div>
-        </div>
-      </CardShell>
-    </motion.div>
+          {fc.bigNumber}
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 2.1, duration: 0.5 }}
+          style={{
+            marginTop: 6,
+            fontSize: 18,
+            color: C.ink,
+            fontWeight: 400,
+          }}
+        >
+          {fc.label}
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ ...spring, delay: 2.3 }}
+          style={{ marginTop: 26 }}
+        >
+          <Hairline />
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ ...spring, delay: 2.45 }}
+          style={{
+            marginTop: 16,
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            color: C.ink2,
+            fontSize: 13,
+          }}
+        >
+          <span>
+            ≈ population of{" "}
+            <span style={{ color: C.ink, fontWeight: 500 }}>{fc.comparisonCity}</span>
+          </span>
+          <span className="w-mono" style={{ color: C.ink3 }}>
+            ~{fc.comparisonPopulation}
+          </span>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 2.7, duration: 0.4 }}
+          className="w-serif"
+          style={{
+            marginTop: 18,
+            fontSize: 17,
+            color: C.ink2,
+            lineHeight: 1.35,
+            maxWidth: 290,
+          }}
+        >
+          And honestly — getting close to Mangalore.
+        </motion.div>
+      </div>
+    </Shell>
   );
 }
 
-/* ============================================================
- * CARD 7 — Top Companies From Back Home (Spotify Top Songs style)
- * Hot pink + clean numbered list
- * ============================================================ */
+/* ====================================================================
+ * CARD 2 — Big year for {company}.  Split-screen: oversized italic
+ * serif "big" + sans body, vertical company name spine on left.
+ * ==================================================================== */
+export function Card2() {
+  const company = wrappedConfig.companyName;
+  return (
+    <Shell>
+      <DeckMark />
+      <PageNo n={3} />
+
+      {/* Vertical spine label */}
+      <div
+        className="w-kicker"
+        style={{
+          position: "absolute",
+          left: 22,
+          top: "50%",
+          transform: "translateY(-50%) rotate(-90deg)",
+          transformOrigin: "left center",
+          color: C.ink3,
+          whiteSpace: "nowrap",
+        }}
+      >
+        Chapter 01 — Scale
+      </div>
+
+      <div
+        style={{
+          position: "absolute",
+          left: 70,
+          right: 28,
+          top: 92,
+          bottom: 64,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+        }}
+      >
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={spring}
+        >
+          <Kicker>FY {wrappedConfig.year} · in summary</Kicker>
+        </motion.div>
+
+        <motion.h2
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ ...spring, delay: 0.15 }}
+          style={{
+            margin: "22px 0 0",
+            fontSize: 56,
+            fontWeight: 600,
+            lineHeight: 0.98,
+            letterSpacing: "-0.04em",
+            color: C.ink,
+          }}
+        >
+          A{" "}
+          <span className="w-serif" style={{ color: C.accent, fontWeight: 400 }}>
+            big
+          </span>{" "}
+          year for {company}.
+        </motion.h2>
+
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.45, duration: 0.5 }}
+          style={{
+            marginTop: 24,
+            fontSize: 15,
+            lineHeight: 1.55,
+            color: C.ink2,
+            maxWidth: 320,
+          }}
+        >
+          Numbers grew. Teams grew. The list of things you stopped doing manually
+          grew the fastest. Here's what the year actually looked like.
+        </motion.p>
+
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ ...spring, delay: 0.7 }}
+          style={{ marginTop: 36 }}
+        >
+          <Hairline />
+          <div
+            style={{
+              marginTop: 18,
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: 24,
+            }}
+          >
+            {[
+              { k: "Growth", v: wrappedConfig.stats.growth },
+              { k: "New teammates", v: String(wrappedConfig.stats.newTeammates) },
+            ].map((s, i) => (
+              <motion.div
+                key={s.k}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ ...spring, delay: 0.85 + i * 0.1 }}
+              >
+                <div className="w-kicker" style={{ color: C.ink3 }}>
+                  {s.k}
+                </div>
+                <div
+                  className="w-mono"
+                  style={{
+                    marginTop: 6,
+                    fontSize: 30,
+                    fontWeight: 500,
+                    letterSpacing: "-0.03em",
+                    color: C.ink,
+                  }}
+                >
+                  {s.v}
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+      </div>
+    </Shell>
+  );
+}
+
+/* ====================================================================
+ * CARD 3 — People hired.  Asymmetric: oversized mono numeral on the
+ * right, label and supporting copy on the left.  Animated count-up.
+ * ==================================================================== */
+export function Card3() {
+  const hires = wrappedConfig.stats.hires;
+  return (
+    <Shell>
+      <DeckMark />
+      <PageNo n={4} />
+
+      {/* Right-side numeral */}
+      <motion.div
+        initial={{ opacity: 0, x: 40 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ ...spring, delay: 0.15 }}
+        className="w-mono"
+        style={{
+          position: "absolute",
+          right: -10,
+          top: "30%",
+          fontSize: "clamp(280px, 70vw, 480px)",
+          fontWeight: 500,
+          lineHeight: 0.82,
+          letterSpacing: "-0.07em",
+          color: C.ink,
+          opacity: 1,
+        }}
+      >
+        <CountUp value={hires} delay={0.3} />
+      </motion.div>
+
+      {/* Left label block */}
+      <div
+        style={{
+          position: "absolute",
+          left: 28,
+          right: 28,
+          top: 100,
+          maxWidth: 220,
+        }}
+      >
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={spring}
+        >
+          <Kicker accent>Chapter 02 — People</Kicker>
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ ...spring, delay: 0.15 }}
+          style={{
+            marginTop: 20,
+            fontSize: 32,
+            fontWeight: 600,
+            lineHeight: 1.05,
+            letterSpacing: "-0.03em",
+            color: C.ink,
+          }}
+        >
+          New{" "}
+          <span className="w-serif" style={{ fontWeight: 400 }}>
+            faces
+          </span>{" "}
+          in the room.
+        </motion.div>
+      </div>
+
+      {/* Bottom-left footnote */}
+      <div
+        style={{
+          position: "absolute",
+          left: 28,
+          right: 28,
+          bottom: 70,
+          maxWidth: 260,
+        }}
+      >
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.9, duration: 0.5 }}
+        >
+          <Hairline />
+          <p
+            style={{
+              marginTop: 14,
+              fontSize: 14,
+              lineHeight: 1.5,
+              color: C.ink2,
+            }}
+          >
+            People hired across teams. That's an entirely new floor — and a fair
+            amount of new lunch orders.
+          </p>
+        </motion.div>
+      </div>
+    </Shell>
+  );
+}
+
+/* ====================================================================
+ * CARD 4 — Customers.  Centered-left big number with hairline-shimmer
+ * underline + secondary stat row.
+ * ==================================================================== */
+export function Card4() {
+  const customers = wrappedConfig.stats.customers;
+  return (
+    <Shell>
+      <DeckMark />
+      <PageNo n={5} />
+
+      <div
+        style={{
+          position: "absolute",
+          left: 28,
+          right: 28,
+          top: 100,
+        }}
+      >
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={spring}>
+          <Kicker>Chapter 03 — Customers</Kicker>
+        </motion.div>
+      </div>
+
+      <div
+        style={{
+          position: "absolute",
+          left: 28,
+          right: 28,
+          top: "30%",
+        }}
+      >
+        <motion.div
+          className="w-mono"
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ ...spring, delay: 0.2 }}
+          style={{
+            fontSize: "clamp(96px, 22vw, 150px)",
+            fontWeight: 500,
+            lineHeight: 0.9,
+            letterSpacing: "-0.06em",
+            color: C.ink,
+          }}
+        >
+          {customers}
+        </motion.div>
+
+        <motion.div
+          initial={{ scaleX: 0 }}
+          animate={{ scaleX: 1 }}
+          transition={{ ...springSoft, delay: 0.55 }}
+          style={{ marginTop: 14, transformOrigin: "left" }}
+        >
+          <div className="w-shimmer-line" style={{ height: 2, width: "100%" }} />
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ ...spring, delay: 0.7 }}
+          style={{
+            marginTop: 22,
+            fontSize: 22,
+            fontWeight: 500,
+            lineHeight: 1.2,
+            color: C.ink,
+            maxWidth: 320,
+          }}
+        >
+          Customers chose{" "}
+          <span className="w-serif" style={{ color: C.accent, fontWeight: 400 }}>
+            {wrappedConfig.companyName}
+          </span>
+          .
+        </motion.div>
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.0, duration: 0.5 }}
+          style={{
+            marginTop: 12,
+            fontSize: 14,
+            color: C.ink2,
+            maxWidth: 290,
+            lineHeight: 1.5,
+          }}
+        >
+          And kept coming back. Retention isn't a number on a slide — it's the
+          quiet sound of fewer support tickets.
+        </motion.p>
+      </div>
+    </Shell>
+  );
+}
+
+/* ====================================================================
+ * CARD 5 — Tal Boss has been watching.  Editorial pull-quote treatment.
+ * Big italic serif quote, attribution, hairline.
+ * ==================================================================== */
+export function Card5() {
+  return (
+    <Shell>
+      <DeckMark />
+      <PageNo n={6} />
+
+      {/* Soft accent radial — subtle, not neon */}
+      <motion.div
+        aria-hidden
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1.4 }}
+        style={{
+          position: "absolute",
+          inset: -100,
+          background:
+            "radial-gradient(circle at 70% 30%, rgba(226,106,74,0.10), transparent 55%)",
+          pointerEvents: "none",
+        }}
+      />
+
+      <div
+        style={{
+          position: "absolute",
+          left: 28,
+          right: 28,
+          top: 100,
+        }}
+      >
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={spring}>
+          <Kicker accent>Note from the desk</Kicker>
+        </motion.div>
+      </div>
+
+      <div
+        style={{
+          position: "absolute",
+          left: 28,
+          right: 28,
+          top: "28%",
+        }}
+      >
+        <motion.div
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ ...spring, delay: 0.2 }}
+          className="w-serif"
+          style={{
+            fontSize: 48,
+            fontWeight: 400,
+            lineHeight: 1.08,
+            letterSpacing: "-0.02em",
+            color: C.ink,
+          }}
+        >
+          <span style={{ color: C.accent }}>“</span>Honestly,
+          <br />
+          impressed.<span style={{ color: C.accent }}>”</span>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ ...spring, delay: 0.55 }}
+          style={{ marginTop: 30 }}
+        >
+          <Hairline />
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ ...spring, delay: 0.7 }}
+          style={{
+            marginTop: 16,
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "baseline",
+            color: C.ink2,
+            fontSize: 13,
+          }}
+        >
+          <span>
+            <span style={{ color: C.ink, fontWeight: 500 }}>Tal Boss</span>
+            <span style={{ color: C.ink3 }}> — has been watching</span>
+          </span>
+          <span className="w-mono" style={{ color: C.ink3, fontSize: 11 }}>
+            FY{wrappedConfig.year}
+          </span>
+        </motion.div>
+
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.0, duration: 0.5 }}
+          style={{
+            marginTop: 32,
+            fontSize: 14,
+            lineHeight: 1.55,
+            color: C.ink2,
+            maxWidth: 300,
+          }}
+        >
+          Most of the changes this year were small. The compounding wasn't.
+        </motion.p>
+      </div>
+    </Shell>
+  );
+}
+
+/* ====================================================================
+ * CARD 6 — Biggest month. Timeline strip with 12 ticks, October hits.
+ * ==================================================================== */
+export function Card6() {
+  const months = ["J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"];
+  const peakIdx = 9; // October
+  return (
+    <Shell>
+      <DeckMark />
+      <PageNo n={7} />
+
+      <div style={{ position: "absolute", left: 28, right: 28, top: 100 }}>
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={spring}>
+          <Kicker>Chapter 04 — Peak</Kicker>
+        </motion.div>
+      </div>
+
+      {/* Timeline */}
+      <div
+        style={{
+          position: "absolute",
+          left: 28,
+          right: 28,
+          top: "28%",
+        }}
+      >
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(12, 1fr)",
+            alignItems: "end",
+            gap: 4,
+            height: 120,
+          }}
+        >
+          {months.map((m, i) => {
+            const h = 18 + Math.abs(Math.sin(i * 0.9)) * 60 + (i === peakIdx ? 40 : 0);
+            const isPeak = i === peakIdx;
+            return (
+              <motion.div
+                key={i + m}
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: h, opacity: 1 }}
+                transition={{ ...spring, delay: 0.2 + i * 0.05 }}
+                style={{
+                  width: "100%",
+                  background: isPeak ? C.accent : C.hair2,
+                  borderRadius: 1,
+                  position: "relative",
+                }}
+              />
+            );
+          })}
+        </div>
+        <div
+          style={{
+            marginTop: 8,
+            display: "grid",
+            gridTemplateColumns: "repeat(12, 1fr)",
+            gap: 4,
+          }}
+          className="w-mono"
+        >
+          {months.map((m, i) => (
+            <div
+              key={i + "l"}
+              style={{
+                textAlign: "center",
+                fontSize: 10,
+                color: i === peakIdx ? C.accent : C.ink3,
+                fontWeight: i === peakIdx ? 600 : 400,
+              }}
+            >
+              {m}
+            </div>
+          ))}
+        </div>
+
+        {/* Headline below the chart */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ ...spring, delay: 1.1 }}
+          style={{
+            marginTop: 38,
+            fontSize: 38,
+            fontWeight: 600,
+            lineHeight: 1,
+            letterSpacing: "-0.03em",
+            color: C.ink,
+          }}
+        >
+          {wrappedConfig.stats.biggestMonth} broke{" "}
+          <span className="w-serif" style={{ color: C.accent, fontWeight: 400 }}>
+            every
+          </span>{" "}
+          chart.
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.4, duration: 0.5 }}
+          style={{
+            marginTop: 22,
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "baseline",
+            color: C.ink2,
+            fontSize: 13,
+          }}
+        >
+          <span>Peak month</span>
+          <span className="w-mono" style={{ color: C.ink }}>
+            {wrappedConfig.stats.biggestMonthValue}
+          </span>
+        </motion.div>
+      </div>
+    </Shell>
+  );
+}
+
+/* ====================================================================
+ * CARD 7 — Top companies (back home).  Editorial numbered list.
+ * ==================================================================== */
 export function Card7() {
   const companies = wrappedConfig.topCompanies;
   return (
-    <CardShell background="#FF4FB8" color="#0A0A0A">
-      <div style={{ position: "absolute", top: 70, left: 24, right: 24 }}>
-        <FadeUp delay={0.1}>
-          <h2
-            style={{
-              fontWeight: 900,
-              fontSize: 30,
-              lineHeight: 1,
-              margin: 0,
-              color: "#0A0A0A",
-              letterSpacing: "-0.02em",
-              textTransform: "uppercase",
-            }}
-          >
-            Top Companies<br />From Back Home
-          </h2>
-        </FadeUp>
+    <Shell>
+      <DeckMark />
+      <PageNo n={8} />
+
+      <div style={{ position: "absolute", left: 28, right: 28, top: 100 }}>
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={spring}>
+          <Kicker>Chapter 05 — Neighbours</Kicker>
+        </motion.div>
+        <motion.h2
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ ...spring, delay: 0.15 }}
+          style={{
+            margin: "20px 0 0",
+            fontSize: 30,
+            fontWeight: 600,
+            lineHeight: 1.05,
+            letterSpacing: "-0.03em",
+            color: C.ink,
+          }}
+        >
+          Top companies{" "}
+          <span className="w-serif" style={{ fontWeight: 400 }}>
+            from
+          </span>{" "}
+          back home.
+        </motion.h2>
       </div>
 
       <div
         style={{
           position: "absolute",
-          top: 180,
-          left: 20,
-          right: 20,
+          left: 28,
+          right: 28,
+          top: "34%",
           display: "flex",
           flexDirection: "column",
-          gap: 14,
         }}
       >
+        <Hairline />
         {companies.map((c, i) => (
           <motion.div
             key={c.name}
-            initial={{ opacity: 0, x: -20 }}
+            initial={{ opacity: 0, x: -12 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2 + i * 0.08, duration: 0.4, ease }}
+            transition={{ ...spring, delay: 0.25 + i * 0.08 }}
             style={{
-              display: "flex",
+              display: "grid",
+              gridTemplateColumns: "32px 36px 1fr auto",
               alignItems: "center",
-              gap: 12,
+              gap: 14,
+              padding: "16px 0",
+              borderBottom: `1px solid ${C.hair}`,
             }}
           >
-            <div
-              style={{
-                fontWeight: 900,
-                fontSize: 44,
-                width: 44,
-                color: "#0A0A0A",
-                lineHeight: 1,
-                textAlign: "center",
-                letterSpacing: "-0.04em",
-              }}
+            <span
+              className="w-mono"
+              style={{ color: C.ink3, fontSize: 12, letterSpacing: "0.1em" }}
             >
-              {i + 1}
-            </div>
+              {String(i + 1).padStart(2, "0")}
+            </span>
             <img
               src={c.logo}
               alt=""
-              width={56}
-              height={56}
+              width={32}
+              height={32}
               style={{
-                width: 56,
-                height: 56,
-                borderRadius: 10,
+                width: 32,
+                height: 32,
+                borderRadius: 6,
                 objectFit: "cover",
-                background: "#fff",
+                background: C.surface2,
               }}
             />
-            <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ minWidth: 0 }}>
               <div
                 style={{
-                  fontWeight: 900,
-                  fontSize: 18,
-                  color: "#0A0A0A",
+                  fontSize: 15,
+                  fontWeight: 500,
+                  color: C.ink,
                   lineHeight: 1.1,
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
                 }}
               >
                 {c.name}
               </div>
               <div
                 style={{
-                  fontWeight: 600,
-                  fontSize: 13,
-                  color: "#0A0A0A",
-                  opacity: 0.7,
-                  marginTop: 2,
+                  fontSize: 12,
+                  color: C.ink3,
+                  marginTop: 3,
                   overflow: "hidden",
                   textOverflow: "ellipsis",
                   whiteSpace: "nowrap",
@@ -650,173 +1137,49 @@ export function Card7() {
                 {c.tagline}
               </div>
             </div>
+            <span
+              className="w-mono"
+              style={{ color: C.ink3, fontSize: 12 }}
+            >
+              ↗
+            </span>
           </motion.div>
         ))}
       </div>
-
-      <div
-        style={{
-          position: "absolute",
-          left: 0,
-          right: 0,
-          bottom: 28,
-          display: "flex",
-          justifyContent: "center",
-        }}
-      >
-        <FadeUp delay={0.9}>
-          <div
-            style={{
-              padding: "10px 22px",
-              borderRadius: 999,
-              background: "#0A0A0A",
-              color: "#FFF4E6",
-              fontWeight: 900,
-              fontSize: 14,
-              letterSpacing: "0.02em",
-            }}
-          >
-            Share this story
-          </div>
-        </FadeUp>
-      </div>
-    </CardShell>
+    </Shell>
   );
 }
 
-/* ============================================================
- * CARD 8 — Deep red CTA finale + stacked fan + cyan button
- * ============================================================ */
-export function Card8() {
-  return (
-    <CardShell background="#B81D13">
-      <motion.div
-        aria-hidden
-        style={{
-          position: "absolute",
-          inset: "-10%",
-          background:
-            "radial-gradient(circle at 50% 35%, #FF6B35 0%, #B81D13 55%, #5A0A04 100%)",
-        }}
-        animate={{ scale: [1, 1.08, 1] }}
-        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-      />
-
-      <motion.div
-        initial={{ scale: 0.5, opacity: 0, rotate: -10 }}
-        animate={{ scale: 1.1, opacity: 1, rotate: 0 }}
-        transition={{ duration: 0.9, ease }}
-        style={{
-          position: "absolute",
-          left: "50%",
-          top: "36%",
-          transform: "translate(-50%, -50%)",
-        }}
-      >
-        <StackedFan
-          count={12}
-          width={340}
-          height={460}
-          colorFrom="#FFCC00"
-          colorTo="#FF6BA1"
-          offset={20}
-        />
-      </motion.div>
-
-      <motion.div
-        initial={{ y: 60, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.6, ease, delay: 0.4 }}
-        style={{
-          position: "absolute",
-          left: "50%",
-          top: "30%",
-          transform: "translateX(-50%)",
-        }}
-      >
-        <Mascot size={190} rounded={false} />
-      </motion.div>
-
-      <div
-        style={{
-          position: "absolute",
-          left: 24,
-          right: 24,
-          bottom: 110,
-          textAlign: "center",
-        }}
-      >
-        <FadeUp delay={0.6}>
-          <h2
-            style={{
-              fontWeight: 900,
-              fontSize: 34,
-              lineHeight: 1.05,
-              margin: 0,
-              color: "#0A0A0A",
-              letterSpacing: "-0.02em",
-              textShadow: "2px 2px 0 #FFF4E6",
-            }}
-          >
-            Your team is hiring.
-            <br />
-            Tal Boss makes it 10x faster.
-          </h2>
-        </FadeUp>
-        <FadeUp delay={0.9}>
-          <a
-            href={wrappedConfig.ctaUrl}
-            onClick={(e) => e.stopPropagation()}
-            style={{
-              display: "inline-block",
-              marginTop: 22,
-              padding: "16px 30px",
-              borderRadius: 999,
-              background: "#00C2FF",
-              color: "#0A0A0A",
-              fontWeight: 900,
-              fontSize: 18,
-              textDecoration: "none",
-              boxShadow: "0 8px 0 #003D7A",
-            }}
-          >
-            Meet Tal Boss →
-          </a>
-        </FadeUp>
-      </div>
-    </CardShell>
-  );
-}
-
-/* ============================================================
- * CARD FORM — last ask: name, department, best manager
- * ============================================================ */
+/* ====================================================================
+ * CARD FORM — Editorial input column.  Floated labels, accent caret,
+ * single tactile primary button.
+ * ==================================================================== */
 export function CardForm({ onSubmit }: { onSubmit: () => void }) {
   const [name, setName] = useState("");
   const [department, setDepartment] = useState("");
   const [bestManager, setBestManager] = useState("");
   const canSubmit = name.trim().length > 0;
 
-  const label: React.CSSProperties = {
+  const labelStyle: React.CSSProperties = {
     display: "block",
-    fontWeight: 800,
-    fontSize: 12,
-    letterSpacing: "0.08em",
+    fontFamily: "'Geist Mono', monospace",
+    fontSize: 11,
+    letterSpacing: "0.16em",
     textTransform: "uppercase",
     marginBottom: 8,
-    color: "#FFF4E6",
-    opacity: 0.85,
+    color: C.ink2,
   };
-  const input: React.CSSProperties = {
+  const inputStyle: React.CSSProperties = {
     width: "100%",
-    padding: "14px 16px",
-    borderRadius: 12,
-    border: "2px solid rgba(255,244,230,0.3)",
-    background: "rgba(0,0,0,0.35)",
-    color: "#FFF4E6",
-    fontSize: 15,
-    fontWeight: 600,
-    fontFamily: "Inter, sans-serif",
+    padding: "12px 0",
+    borderRadius: 0,
+    border: "none",
+    borderBottom: `1px solid ${C.hair2}`,
+    background: "transparent",
+    color: C.ink,
+    fontSize: 17,
+    fontWeight: 400,
+    fontFamily: "Geist, sans-serif",
     outline: "none",
     boxSizing: "border-box",
   };
@@ -824,43 +1187,52 @@ export function CardForm({ onSubmit }: { onSubmit: () => void }) {
   const stop = (e: React.SyntheticEvent) => e.stopPropagation();
 
   return (
-    <CardShell background="#2A0A1A">
-      <CheckerboardBg colorA="#3A0F26" colorB="#2A0A1A" cell={80} />
+    <Shell>
+      <DeckMark />
+      <PageNo n={9} />
       <div
         style={{
           position: "absolute",
           inset: 0,
-          padding: "60px 24px 32px",
+          padding: "100px 28px 32px",
           display: "flex",
           flexDirection: "column",
           overflowY: "auto",
         }}
         onClick={stop}
       >
-        <FadeUp>
-          <h2
-            style={{
-              fontWeight: 900,
-              fontSize: 32,
-              lineHeight: 1,
-              margin: 0,
-              color: "#FFF4E6",
-              letterSpacing: "-0.03em",
-            }}
-          >
-            One last thing.
-          </h2>
-          <p
-            style={{
-              marginTop: 8,
-              fontSize: 14,
-              fontWeight: 600,
-              color: "#FFD700",
-            }}
-          >
-            Tal Boss wants to know about you.
-          </p>
-        </FadeUp>
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={spring}>
+          <Kicker accent>One last thing</Kicker>
+        </motion.div>
+        <motion.h2
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ ...spring, delay: 0.1 }}
+          style={{
+            margin: "18px 0 8px",
+            fontSize: 34,
+            fontWeight: 600,
+            lineHeight: 1.05,
+            letterSpacing: "-0.03em",
+            color: C.ink,
+          }}
+        >
+          Tell us who's{" "}
+          <span className="w-serif" style={{ fontWeight: 400 }}>
+            reading.
+          </span>
+        </motion.h2>
+        <p
+          style={{
+            margin: 0,
+            fontSize: 14,
+            color: C.ink2,
+            lineHeight: 1.55,
+            maxWidth: 320,
+          }}
+        >
+          Three quick fields. Then back to the deck.
+        </p>
 
         <form
           onClick={stop}
@@ -870,318 +1242,285 @@ export function CardForm({ onSubmit }: { onSubmit: () => void }) {
             onSubmit();
           }}
           style={{
-            marginTop: 22,
+            marginTop: 30,
             display: "flex",
             flexDirection: "column",
-            gap: 14,
+            gap: 20,
           }}
         >
-          <div>
-            <label style={label} htmlFor="cf-name">Your name</label>
-            <input
-              id="cf-name"
-              style={input}
-              placeholder="e.g. Yash"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              onClick={stop}
-              onPointerDown={stop}
-            />
-          </div>
-          <div>
-            <label style={label} htmlFor="cf-dept">Department</label>
-            <input
-              id="cf-dept"
-              style={input}
-              placeholder="e.g. Operations"
-              value={department}
-              onChange={(e) => setDepartment(e.target.value)}
-              onClick={stop}
-              onPointerDown={stop}
-            />
-          </div>
-          <div>
-            <label style={label} htmlFor="cf-mgr">
-              Best manager at {wrappedConfig.companyName}?
-            </label>
-            <input
-              id="cf-mgr"
-              style={input}
-              placeholder="Drop a name 👀"
-              value={bestManager}
-              onChange={(e) => setBestManager(e.target.value)}
-              onClick={stop}
-              onPointerDown={stop}
-            />
-          </div>
+          {[
+            {
+              id: "cf-name",
+              label: "Your name",
+              value: name,
+              set: setName,
+              ph: "Yash",
+            },
+            {
+              id: "cf-dept",
+              label: "Department",
+              value: department,
+              set: setDepartment,
+              ph: "Operations",
+            },
+            {
+              id: "cf-mgr",
+              label: `Best manager at ${wrappedConfig.companyName}`,
+              value: bestManager,
+              set: setBestManager,
+              ph: "Drop a name",
+            },
+          ].map((f) => (
+            <div key={f.id}>
+              <label style={labelStyle} htmlFor={f.id}>
+                {f.label}
+              </label>
+              <input
+                id={f.id}
+                style={inputStyle}
+                placeholder={f.ph}
+                value={f.value}
+                onChange={(e) => f.set(e.target.value)}
+                onClick={stop}
+                onPointerDown={stop}
+              />
+            </div>
+          ))}
 
-          <button
+          <motion.button
             type="submit"
             disabled={!canSubmit}
             onClick={stop}
+            whileTap={canSubmit ? { y: 1 } : undefined}
+            transition={spring}
             style={{
-              marginTop: 8,
-              padding: "16px 28px",
+              marginTop: 18,
+              padding: "16px 24px",
               borderRadius: 999,
-              background: canSubmit ? "#FFD700" : "rgba(255,215,0,0.4)",
-              color: "#0A0A0A",
-              fontWeight: 900,
-              fontSize: 16,
+              background: canSubmit ? C.accent : C.surface2,
+              color: canSubmit ? "#0E0E10" : C.ink3,
+              fontWeight: 600,
+              fontSize: 15,
               border: "none",
               cursor: canSubmit ? "pointer" : "not-allowed",
-              boxShadow: canSubmit ? "0 6px 0 #B81D13" : "none",
-              fontFamily: "Inter, sans-serif",
+              fontFamily: "Geist, sans-serif",
+              letterSpacing: "-0.01em",
+              transition: "background 0.2s ease",
             }}
           >
-            Submit & finish →
-          </button>
+            Continue →
+          </motion.button>
         </form>
       </div>
-    </CardShell>
+    </Shell>
+  );
+}
+
+/* ====================================================================
+ * CARD 8 — Closer.  Editorial CTA: big italic serif headline, single
+ * tactile primary button, hairline footer with metadata.
+ * ==================================================================== */
+export function Card8() {
+  return (
+    <Shell>
+      <DeckMark />
+      <PageNo n={10} of={10} />
+
+      {/* Atmospheric accent radial */}
+      <motion.div
+        aria-hidden
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 1.4 }}
+        style={{
+          position: "absolute",
+          left: "50%",
+          top: "55%",
+          width: 520,
+          height: 520,
+          marginLeft: -260,
+          marginTop: -260,
+          background:
+            "radial-gradient(circle at center, rgba(226,106,74,0.18), transparent 60%)",
+          pointerEvents: "none",
+          filter: "blur(8px)",
+        }}
+      />
+      <motion.div
+        aria-hidden
+        animate={{ rotate: 360 }}
+        transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
+        style={{
+          position: "absolute",
+          left: "50%",
+          top: "55%",
+          width: 360,
+          height: 360,
+          marginLeft: -180,
+          marginTop: -180,
+          borderRadius: "50%",
+          border: `1px dashed ${C.hair2}`,
+          pointerEvents: "none",
+        }}
+      />
+
+      <div
+        style={{
+          position: "absolute",
+          left: 28,
+          right: 28,
+          top: 100,
+        }}
+      >
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={spring}>
+          <Kicker accent>End · Chapter 06</Kicker>
+        </motion.div>
+      </div>
+
+      <div
+        style={{
+          position: "absolute",
+          left: 28,
+          right: 28,
+          top: "26%",
+        }}
+      >
+        <motion.h2
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ ...spring, delay: 0.15 }}
+          style={{
+            margin: 0,
+            fontSize: 44,
+            fontWeight: 600,
+            lineHeight: 1.02,
+            letterSpacing: "-0.035em",
+            color: C.ink,
+          }}
+        >
+          Your team is{" "}
+          <span className="w-serif" style={{ color: C.accent, fontWeight: 400 }}>
+            hiring.
+          </span>
+          <br />
+          Tal Boss makes it
+          <br />
+          ten times faster.
+        </motion.h2>
+
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.55, duration: 0.5 }}
+          style={{
+            marginTop: 22,
+            fontSize: 14,
+            lineHeight: 1.55,
+            color: C.ink2,
+            maxWidth: 320,
+          }}
+        >
+          The deck ends here. The year keeps going. So does the pipeline.
+        </motion.p>
+      </div>
+
+      {/* Footer CTA */}
+      <div
+        style={{
+          position: "absolute",
+          left: 28,
+          right: 28,
+          bottom: 70,
+        }}
+      >
+        <Hairline delay={0.7} />
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ ...spring, delay: 0.85 }}
+          style={{
+            marginTop: 18,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 12,
+          }}
+        >
+          <div
+            className="w-mono"
+            style={{ color: C.ink3, fontSize: 11, letterSpacing: "0.1em" }}
+          >
+            tal.af/boss
+          </div>
+          <motion.a
+            href={wrappedConfig.ctaUrl}
+            onClick={(e) => e.stopPropagation()}
+            whileTap={{ y: 1 }}
+            transition={spring}
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 10,
+              padding: "14px 22px",
+              borderRadius: 999,
+              background: C.accent,
+              color: "#0E0E10",
+              fontWeight: 600,
+              fontSize: 15,
+              textDecoration: "none",
+              letterSpacing: "-0.01em",
+              fontFamily: "Geist, sans-serif",
+            }}
+          >
+            Meet Tal Boss
+            <span style={{ fontFamily: "'Geist Mono', monospace" }}>→</span>
+          </motion.a>
+        </motion.div>
+      </div>
+    </Shell>
   );
 }
 
 /* ============================================================
- * CARD FIRECRACKER — MAU reveal with rocket + burst
+ *  Helpers
  * ============================================================ */
-export function CardFirecracker() {
-  const fc = wrappedConfig.firecracker;
-  const particles = Array.from({ length: 28 }, (_, i) => {
-    const angle = (i / 28) * Math.PI * 2;
-    const distance = 120 + ((i * 37) % 60);
-    const colors = ["#FFB800", "#FF6B35", "#FFF4E6"];
-    return {
-      id: i,
-      x: Math.cos(angle) * distance,
-      y: Math.sin(angle) * distance,
-      color: colors[i % 3],
-      rotation: (angle * 180) / Math.PI + 90,
+function CountUp({ value, delay = 0 }: { value: number; delay?: number }) {
+  const [n, setN] = useState(0);
+  useStartTimeout(() => {
+    const duration = 900;
+    const start = performance.now();
+    let raf = 0;
+    const tick = (t: number) => {
+      const p = Math.min(1, (t - start) / duration);
+      const eased = 1 - Math.pow(1 - p, 3);
+      setN(Math.round(value * eased));
+      if (p < 1) raf = requestAnimationFrame(tick);
     };
-  });
-
-  return (
-    <CardShell background="radial-gradient(circle at 50% 40%, #E04A14 0%, #CC3D0E 60%, #8A2408 100%)">
-      {/* Ball ascent */}
-      <motion.div
-        initial={{ y: "100vh", opacity: 1, scale: 1 }}
-        animate={{ y: "25vh", opacity: [1, 1, 0], scale: [1, 1.2, 0] }}
-        transition={{
-          duration: 1.4,
-          times: [0, 0.85, 1],
-          ease: [0.4, 0, 0.2, 1],
-        }}
-        style={{
-          position: "absolute",
-          left: "50%",
-          top: 0,
-          width: 16,
-          height: 16,
-          marginLeft: -8,
-          borderRadius: "50%",
-          background:
-            "radial-gradient(circle, #FFF4E6 0%, #FFB800 60%, #FF6B35 100%)",
-          boxShadow:
-            "0 0 16px 4px #FFB800, 0 0 32px 8px rgba(255,107,53,0.6)",
-        }}
-      >
-        {/* Trail */}
-        <div
-          style={{
-            position: "absolute",
-            left: "50%",
-            top: 8,
-            marginLeft: -2,
-            width: 4,
-            height: 120,
-            background:
-              "linear-gradient(to bottom, #FFB800, rgba(255,107,53,0.4) 60%, transparent)",
-            filter: "blur(2px)",
-            borderRadius: 4,
-          }}
-        />
-      </motion.div>
-
-      {/* Burst particles */}
-      <div
-        style={{
-          position: "absolute",
-          left: "50%",
-          top: "25vh",
-          width: 0,
-          height: 0,
-        }}
-      >
-        {particles.map((p) => (
-          <motion.div
-            key={p.id}
-            initial={{ x: 0, y: 0, scale: 0, opacity: 0 }}
-            animate={{
-              x: p.x,
-              y: p.y,
-              scale: [0, 1.5, 0],
-              opacity: [0, 1, 0],
-            }}
-            transition={{
-              duration: 0.9,
-              delay: 1.2,
-              times: [0, 0.4, 1],
-              ease: "easeOut",
-            }}
-            style={{
-              position: "absolute",
-              left: 0,
-              top: 0,
-              width: 0,
-              height: 0,
-              borderLeft: "4px solid transparent",
-              borderRight: "4px solid transparent",
-              borderBottom: `12px solid ${p.color}`,
-              transform: `rotate(${p.rotation}deg)`,
-              transformOrigin: "center",
-            }}
-          />
-        ))}
-      </div>
-
-      {/* Content */}
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          padding: "0 24px",
-          textAlign: "center",
-        }}
-      >
-        <motion.div
-          initial={{ opacity: 0, scale: 0.7 }}
-          animate={{ opacity: 1, scale: [0.7, 1.05, 1] }}
-          transition={{ duration: 0.6, delay: 2.0, ease }}
-          style={{
-            fontFamily: "Inter, sans-serif",
-            fontWeight: 900,
-            fontSize: "clamp(48px, 13vw, 76px)",
-            letterSpacing: "-0.04em",
-            color: "#FFF4E6",
-            lineHeight: 1,
-            textShadow: "0 4px 24px rgba(0,0,0,0.4)",
-          }}
-        >
-          {fc.bigNumber}
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 2.4, ease }}
-          style={{
-            marginTop: 12,
-            fontFamily: "Inter, sans-serif",
-            fontWeight: 500,
-            fontSize: 18,
-            color: "#FFF4E6",
-            opacity: 0.9,
-          }}
-        >
-          {fc.label}
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5, delay: 2.6, ease }}
-          style={{ marginTop: 28 }}
-        >
-          <motion.div
-            animate={{ scale: [1, 1.02, 1] }}
-            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-            style={{ position: "relative" }}
-          >
-            <KarnatakaOutline />
-          </motion.div>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 3.0, ease }}
-          style={{
-            marginTop: 20,
-            fontFamily: "Inter, sans-serif",
-            fontWeight: 900,
-            fontSize: 22,
-            color: "#FFF4E6",
-            letterSpacing: "-0.02em",
-          }}
-        >
-          {fc.kicker}
-        </motion.div>
-        <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 3.2, ease }}
-          style={{
-            marginTop: 6,
-            fontFamily: "Inter, sans-serif",
-            fontWeight: 500,
-            fontSize: 14,
-            color: "#FFF4E6",
-            opacity: 0.85,
-            maxWidth: 280,
-          }}
-        >
-          {fc.kickerSub}{" "}
-          <span style={{ opacity: 0.7 }}>
-            (Population: ~{fc.comparisonPopulation}.)
-          </span>
-        </motion.div>
-      </div>
-    </CardShell>
-  );
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, delay * 1000);
+  return <>{n}</>;
 }
 
-function KarnatakaOutline() {
-  // Stylized Karnataka outline. Not geographically precise — recognizable silhouette.
-  return (
-    <svg
-      width={200}
-      height={180}
-      viewBox="0 0 200 180"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-label="Karnataka, India"
-    >
-      <path
-        d="M70 10 L95 8 L120 14 L135 22 L150 36 L162 52 L168 70 L170 92 L162 112 L150 130 L138 146 L122 158 L104 166 L86 170 L72 168 L60 158 L52 144 L48 128 L42 112 L36 96 L30 80 L28 64 L34 48 L44 32 L56 20 Z"
-        stroke="#FFF4E6"
-        strokeWidth={2}
-        strokeLinejoin="round"
-        fill="rgba(255,244,230,0.06)"
-      />
-      {/* Mysuru marker (south of state) */}
-      <circle cx={92} cy={150} r={4} fill="#FFF4E6" />
-      <circle
-        cx={92}
-        cy={150}
-        r={8}
-        fill="none"
-        stroke="#FFF4E6"
-        strokeWidth={1}
-        opacity={0.5}
-      />
-      <text
-        x={104}
-        y={154}
-        fill="#FFF4E6"
-        fontSize={11}
-        fontFamily="Inter, sans-serif"
-        fontWeight={600}
-      >
-        Mysuru
-      </text>
-    </svg>
-  );
+function useStartTimeout(fn: () => void | (() => void), ms: number) {
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  useStateOnce(() => {
+    let cleanup: void | (() => void);
+    const id = window.setTimeout(() => {
+      cleanup = fn();
+    }, ms);
+    return () => {
+      clearTimeout(id);
+      if (cleanup) cleanup();
+    };
+  });
+}
+
+// One-shot effect-on-mount, returning cleanup. Avoids importing useEffect twice.
+import { useEffect as _useEffect } from "react";
+function useStateOnce(fn: () => void | (() => void)) {
+  _useEffect(() => {
+    return fn();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 }
