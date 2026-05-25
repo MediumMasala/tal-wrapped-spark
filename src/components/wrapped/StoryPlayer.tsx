@@ -64,7 +64,7 @@ export function StoryPlayer({
       style={{
         position: "fixed",
         inset: 0,
-        background: "#08080A",
+        background: "#0E0E10",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -78,8 +78,8 @@ export function StoryPlayer({
           position: "absolute",
           inset: 0,
           background:
-            "radial-gradient(circle at 50% 50%, rgba(226,106,74,0.12) 0%, #08080A 65%)",
-          filter: "blur(60px)",
+            "radial-gradient(circle at 30% 20%, rgba(255,90,78,0.18), transparent 55%), radial-gradient(circle at 70% 80%, rgba(77,108,255,0.16), transparent 55%)",
+          filter: "blur(40px)",
         }}
       />
 
@@ -92,8 +92,8 @@ export function StoryPlayer({
           maxHeight: "100dvh",
           background: "#0E0E10",
           overflow: "hidden",
-          borderRadius: 0,
-          boxShadow: "0 40px 100px rgba(0,0,0,0.7), 0 0 0 1px rgba(244,244,245,0.04)",
+          borderRadius: 18,
+          boxShadow: "0 40px 100px rgba(0,0,0,0.6), 0 0 0 1px rgba(244,244,245,0.06)",
         }}
       >
         {/* Story card */}
@@ -162,14 +162,14 @@ export function StoryPlayer({
                 key={i}
                 style={{
                   flex: 1,
-                  height: 2,
-                  borderRadius: 1,
+                  height: 3,
+                  borderRadius: 2,
                   background:
                     i < index
-                      ? "rgba(244,244,245,0.9)"
+                      ? "rgba(255,255,255,0.95)"
                       : i === index
-                        ? "#E26A4A"
-                        : "rgba(244,244,245,0.12)",
+                        ? "#FFC542"
+                        : "rgba(244,244,245,0.18)",
                   transition: "background 0.4s ease",
                 }}
               />
