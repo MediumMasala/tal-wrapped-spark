@@ -824,64 +824,70 @@ export function Card8() {
     <Shell theme={theme}>
       <motion.div aria-hidden className="w-spin"
         style={{
-          position: "absolute", left: "50%", top: "55%",
-          width: 440, height: 440, marginLeft: -220, marginTop: -220,
+          position: "absolute", left: "50%", top: "62%",
+          width: 520, height: 520, marginLeft: -260, marginTop: -260,
           borderRadius: "50%", border: `2px dashed ${PAL.ink}`,
-          opacity: 0.3, pointerEvents: "none",
+          opacity: 0.15, pointerEvents: "none",
         }} />
-      <Blob color={theme.blob} size={280} x="62%" y="60%" delay={0.2} opacity={0.7} />
-      <Blob color={PAL.mustard} size={200} x="-15%" y="-5%" delay={0.35} opacity={0.7} />
+      <Blob color={theme.blob} size={240} x="68%" y="72%" delay={0.2} opacity={0.55} />
+      <Blob color={PAL.mustard} size={180} x="-20%" y="-8%" delay={0.35} opacity={0.55} />
       <DeckMark theme={theme} />
       <PageNo n={10} theme={theme} />
 
-      <div style={{ position: "absolute", left: 24, right: 24, top: 90 }}>
+      <div style={{ position: "absolute", left: 24, right: 24, top: 70 }}>
         <Pill bg={theme.ink} fg={theme.bg}>End · Chapter 06</Pill>
       </div>
 
-      <div style={{ position: "absolute", left: 24, right: 24, top: "24%" }}>
+      <div style={{ position: "absolute", left: 24, right: 24, top: 120 }}>
         <motion.h2
           className="w-display"
           initial={{ opacity: 0, y: 22 }} animate={{ opacity: 1, y: 0 }}
           transition={{ ...spring, delay: 0.15 }}
           style={{
-            margin: 0, fontSize: "clamp(48px, 12vw, 76px)",
+            margin: 0,
+            fontSize: "clamp(38px, 9.5vw, 56px)",
+            lineHeight: 0.95,
             color: theme.ink,
           }}
         >
           Your team<br />
           is <span style={{
             background: theme.ink, color: theme.bg,
-            padding: "0 10px 4px", borderRadius: 6,
+            padding: "0 10px 2px", borderRadius: 6,
+            display: "inline-block",
+            boxDecorationBreak: "clone",
+            WebkitBoxDecorationBreak: "clone",
           }}>hiring.</span><br />
-          Tal Boss makes<br />
-          it 10× faster.
+          Tal Boss makes it<br />
+          10× faster.
         </motion.h2>
 
         <motion.p
           initial={{ opacity: 0 }} animate={{ opacity: 1 }}
           transition={{ delay: 0.55, duration: 0.5 }}
           style={{
-            marginTop: 18, fontSize: 14, lineHeight: 1.55,
-            color: theme.ink, opacity: 0.85, maxWidth: 320, fontWeight: 500,
+            marginTop: 20, fontSize: 14, lineHeight: 1.5,
+            color: theme.ink, opacity: 0.8, maxWidth: 300, fontWeight: 500,
           }}
         >
-          The deck ends here. The year keeps going. So does the pipeline.
+          The deck ends here. The year keeps going.<br />So does the pipeline.
         </motion.p>
       </div>
 
-      <div style={{ position: "absolute", left: 24, right: 24, bottom: 56 }}>
+      <div style={{ position: "absolute", left: 24, right: 24, bottom: 50 }}>
         <motion.a
           href={wrappedConfig.ctaUrl}
           onClick={(e) => e.stopPropagation()}
           whileTap={{ y: 2, scale: 0.98 }}
           transition={spring}
-          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}
           style={{
             display: "flex", alignItems: "center", justifyContent: "center", gap: 10,
-            padding: "18px 24px", borderRadius: 999,
+            padding: "16px 24px", borderRadius: 999,
             background: theme.ink, color: theme.bg,
-            fontWeight: 700, fontSize: 16, textDecoration: "none",
+            fontWeight: 700, fontSize: 15, textDecoration: "none",
             fontFamily: "Geist, sans-serif",
+            boxShadow: "0 8px 24px rgba(0,0,0,0.25)",
           }}
         >
           Meet Tal Boss <span>→</span>
