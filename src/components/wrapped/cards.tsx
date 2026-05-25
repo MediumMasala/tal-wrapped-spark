@@ -384,53 +384,371 @@ export function Card2() {
  * CARD 3 — Hires (hotpink)
  * ============================================================ */
 export function Card3() {
-  const hires = wrappedConfig.stats.hires;
-  const theme = T.hotpink;
+  const TAL = {
+    bg: "#FF6B35",
+    dark: "#0A0A0A",
+    cream: "#FFF4E6",
+    yellow: "#FFB800",
+    deep: "#CC3D0E",
+  };
+  const theme: Theme = { bg: TAL.bg, ink: TAL.cream, accent: TAL.yellow, blob: TAL.deep };
+
+  const monthlyAdds = [
+    { fullLabel: "May '24", delta: 0 },  { fullLabel: "Jun '24", delta: 3 },
+    { fullLabel: "Jul '24", delta: 6 },  { fullLabel: "Aug '24", delta: 0 },
+    { fullLabel: "Sep '24", delta: 1 },  { fullLabel: "Oct '24", delta: 2 },
+    { fullLabel: "Nov '24", delta: 0 },  { fullLabel: "Dec '24", delta: 4 },
+    { fullLabel: "Jan '25", delta: 10 }, { fullLabel: "Feb '25", delta: 18 },
+    { fullLabel: "Mar '25", delta: 37 }, { fullLabel: "Apr '25", delta: 20 },
+    { fullLabel: "May '25", delta: 29 }, { fullLabel: "Jun '25", delta: 42 },
+    { fullLabel: "Jul '25", delta: 31 }, { fullLabel: "Aug '25", delta: 16 },
+    { fullLabel: "Sep '25", delta: 37 }, { fullLabel: "Oct '25", delta: 44 },
+    { fullLabel: "Nov '25", delta: 6 },  { fullLabel: "Dec '25", delta: 18 },
+    { fullLabel: "Jan '26", delta: 39 }, { fullLabel: "Feb '26", delta: 15 },
+    { fullLabel: "Mar '26", delta: 28 }, { fullLabel: "Apr '26", delta: 22 },
+    { fullLabel: "May '26", delta: 12 },
+  ];
+  const peakIdx = 17;
+  const max = 44;
+  const maxH = 170;
+
+  const ease = [0.22, 1, 0.36, 1] as const;
+  const overshoot = [0.34, 1.56, 0.64, 1] as const;
+
+  const [hover, setHover] = useState<number | null>(null);
+
   return (
     <Shell theme={theme}>
-      <Blob color={theme.blob} size={340} x="55%" y="-10%" delay={0.15} opacity={0.7} />
-      <Blob color={PAL.lilac} size={200} x="-10%" y="65%" delay={0.3} opacity={0.6} />
       <DeckMark theme={theme} />
       <PageNo n={4} theme={theme} />
 
-      <div style={{ position: "absolute", left: 24, right: 24, top: 90 }}>
-        <Pill bg={theme.accent} fg={PAL.ink}>Chapter 02 · People</Pill>
+      {/* Top-right near-black circle bleeds off corner */}
+      <motion.div
+        aria-hidden
+        initial={{ opacity: 0, scale: 0.85, rotate: 0 }}
+        animate={{
+          opacity: 1,
+          scale: [1, 1.015, 1],
+          rotate: 360,
+        }}
+        transition={{
+          opacity: { duration: 0.8, delay: 0.1, ease: "easeOut" },
+          scale: { duration: 6, repeat: Infinity, ease: "easeInOut" },
+          rotate: { duration: 60, repeat: Infinity, ease: "linear" },
+        }}
+        style={{
+          position: "absolute",
+          top: -180, right: -120,
+          width: 300, height: 300,
+          borderRadius: "50%",
+          background: `radial-gradient(circle at 50% 50%, ${TAL.dark} 0%, #1F1F1F 100%)`,
+          pointerEvents: "none",
+        }}
+      />
+
+      {/* Chapter pill */}
+      <motion.div
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.35, delay: 0.3, ease }}
+        style={{
+          position: "absolute", top: 64, left: 24, zIndex: 3,
+          display: "inline-flex", alignItems: "center", gap: 8,
+          padding: "9px 16px", borderRadius: 999,
+          background: TAL.yellow, color: TAL.dark,
+          fontFamily: "Geist, Inter, sans-serif",
+          fontSize: 11, fontWeight: 800,
+          letterSpacing: "0.1em", textTransform: "uppercase",
+        }}
+      >
+        <motion.span
+          animate={{ opacity: [1, 0.4, 1] }}
+          transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
+          style={{ width: 6, height: 6, borderRadius: 999, background: TAL.dark }}
+        />
+        Chapter 03 · Growth
+      </motion.div>
+
+      {/* Headline */}
+      <div style={{ position: "absolute", left: 24, right: 24, top: 130, zIndex: 2 }}>
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45, delay: 0.4, ease }}
+          style={{
+            fontFamily: "Archivo Black, Geist, sans-serif",
+            fontSize: "clamp(44px, 14cqw, 60px)",
+            lineHeight: 1.0,
+            letterSpacing: "-0.04em",
+            color: TAL.cream,
+          }}
+        >
+          13 became{" "}
+          <motion.span
+            initial={{ opacity: 0, scale: 0.85 }}
+            animate={{
+              opacity: 1,
+              scale: [0.85, 1.05, 1],
+              textShadow: [
+                "0 0 0px rgba(255,184,0,0)",
+                "0 0 24px rgba(255,184,0,0.45)",
+                "0 0 0px rgba(255,184,0,0)",
+              ],
+            }}
+            transition={{
+              opacity: { duration: 0.3, delay: 0.5 },
+              scale: { duration: 0.5, delay: 0.5, ease: overshoot },
+              textShadow: { duration: 3, delay: 1.2, repeat: Infinity, ease: "easeInOut" },
+            }}
+            style={{ color: TAL.yellow, display: "inline-block" }}
+          >
+            453.
+          </motion.span>
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45, delay: 0.6, ease }}
+          style={{
+            marginTop: 6,
+            fontFamily: "Archivo Black, Geist, sans-serif",
+            fontSize: "clamp(24px, 7cqw, 32px)",
+            lineHeight: 1.0,
+            letterSpacing: "-0.03em",
+            color: TAL.cream,
+          }}
+        >
+          In 24 months.
+        </motion.div>
       </div>
 
-      <div style={{ position: "absolute", left: 24, right: 24, top: "28%" }}>
-        <motion.div
-          className="w-display"
-          initial={{ opacity: 0, scale: 0.7 }} animate={{ opacity: 1, scale: 1 }}
-          transition={{ ...spring, delay: 0.2 }}
+      {/* Bar chart */}
+      <div
+        style={{
+          position: "absolute",
+          left: 0, right: 0,
+          bottom: 120,
+          padding: "0 24px",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          zIndex: 2,
+        }}
+      >
+        <div
           style={{
-            fontSize: "clamp(180px, 50vw, 320px)",
-            color: theme.accent,
-            lineHeight: 0.85,
+            display: "flex",
+            alignItems: "flex-end",
+            justifyContent: "center",
+            gap: 2,
+            height: maxH + 8,
+            width: "100%",
+            maxWidth: 320,
+            position: "relative",
           }}
         >
-          <CountUp value={hires} delay={0.4} />
-        </motion.div>
-        <motion.div
-          initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-          transition={{ ...spring, delay: 0.7 }}
-          className="w-display"
+          {monthlyAdds.map((m, i) => {
+            const isPeak = i === peakIdx;
+            const h = Math.max(4, (m.delta / max) * maxH);
+            const baseDelay = 0.8 + i * 0.06;
+            return (
+              <div
+                key={i}
+                style={{
+                  position: "relative",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "flex-end",
+                  height: maxH,
+                  flex: isPeak ? "0 0 12px" : "0 0 10px",
+                }}
+                onMouseEnter={() => setHover(i)}
+                onMouseLeave={() => setHover(null)}
+              >
+                {hover === i && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      bottom: h + 8,
+                      left: "50%",
+                      transform: "translateX(-50%)",
+                      background: TAL.dark,
+                      color: TAL.cream,
+                      padding: "4px 8px",
+                      borderRadius: 6,
+                      fontSize: 10,
+                      fontFamily: "Geist Mono, monospace",
+                      whiteSpace: "nowrap",
+                      pointerEvents: "none",
+                      zIndex: 10,
+                    }}
+                  >
+                    +{m.delta} {m.fullLabel}
+                  </div>
+                )}
+                <motion.div
+                  initial={{ scaleY: 0, opacity: 0 }}
+                  animate={
+                    isPeak
+                      ? {
+                          scaleY: [0, 1, 1.18, 1],
+                          opacity: 1,
+                          backgroundColor: [TAL.cream, TAL.cream, TAL.yellow, TAL.yellow],
+                          boxShadow: [
+                            "0 0 0px rgba(255,184,0,0)",
+                            "0 0 0px rgba(255,184,0,0)",
+                            "0 0 28px rgba(255,184,0,0.6)",
+                            "0 0 20px rgba(255,184,0,0.4)",
+                          ],
+                        }
+                      : { scaleY: 1, opacity: 1 }
+                  }
+                  transition={
+                    isPeak
+                      ? {
+                          scaleY: { duration: 0.9, delay: baseDelay, times: [0, 0.4, 0.7, 1], ease: "easeOut" },
+                          opacity: { duration: 0.3, delay: baseDelay },
+                          backgroundColor: { duration: 0.9, delay: baseDelay, times: [0, 0.4, 0.7, 1] },
+                          boxShadow: { duration: 0.9, delay: baseDelay, times: [0, 0.4, 0.7, 1] },
+                        }
+                      : { duration: 0.45, delay: baseDelay, ease: "easeOut" }
+                  }
+                  style={{
+                    width: "100%",
+                    height: h,
+                    background: TAL.cream,
+                    borderRadius: "4px 4px 0 0",
+                    transformOrigin: "bottom",
+                    boxShadow: "inset 0 1px 0 rgba(255,255,255,0.4)",
+                  }}
+                />
+                {isPeak && (
+                  <motion.div
+                    aria-hidden
+                    animate={{
+                      boxShadow: [
+                        "0 0 16px rgba(255,184,0,0.3)",
+                        "0 0 28px rgba(255,184,0,0.55)",
+                        "0 0 16px rgba(255,184,0,0.3)",
+                      ],
+                    }}
+                    transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut", delay: 2.5 }}
+                    style={{
+                      position: "absolute",
+                      left: 0, right: 0, bottom: 0,
+                      height: h,
+                      borderRadius: "4px 4px 0 0",
+                      pointerEvents: "none",
+                    }}
+                  />
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* X-axis labels */}
+        <div
           style={{
-            marginTop: 8, fontSize: 38, color: theme.ink,
+            display: "flex",
+            justifyContent: "space-between",
+            width: "100%",
+            maxWidth: 320,
+            marginTop: 10,
+            fontFamily: "Geist, Inter, sans-serif",
+            fontSize: 10,
+            fontWeight: 700,
+            letterSpacing: "0.08em",
+            textTransform: "uppercase",
           }}
         >
-          new faces<br />in the room.
-        </motion.div>
-        <motion.p
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-          transition={{ delay: 1.0, duration: 0.5 }}
-          style={{
-            marginTop: 18, fontSize: 14, lineHeight: 1.5,
-            color: theme.ink, opacity: 0.85, maxWidth: 280, fontWeight: 500,
-          }}
-        >
-          People hired across teams. An entirely new floor — and a lot more lunch orders.
-        </motion.p>
+          <motion.span
+            initial={{ opacity: 0 }} animate={{ opacity: 0.4 }}
+            transition={{ duration: 0.3, delay: 0.9 }}
+            style={{ color: TAL.cream }}
+          >May '24</motion.span>
+          <motion.span
+            initial={{ opacity: 0 }} animate={{ opacity: 0.4 }}
+            transition={{ duration: 0.3, delay: 1.5 }}
+            style={{ color: TAL.cream }}
+          >Mar '25</motion.span>
+          <motion.span
+            initial={{ opacity: 0, y: 0 }}
+            animate={{ opacity: 1, y: [-1, 1, -1] }}
+            transition={{
+              opacity: { duration: 0.3, delay: 2.0 },
+              y: { duration: 3.2, repeat: Infinity, ease: "easeInOut", delay: 2.5 },
+            }}
+            style={{ color: TAL.yellow }}
+          >Oct '25</motion.span>
+          <motion.span
+            initial={{ opacity: 0 }} animate={{ opacity: 0.4 }}
+            transition={{ duration: 0.3, delay: 2.2 }}
+            style={{ color: TAL.cream }}
+          >May '26</motion.span>
+        </div>
       </div>
+
+      {/* Bottom callout pill */}
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 2.5, ease }}
+        whileTap={{ scale: 0.97 }}
+        style={{
+          position: "absolute",
+          left: 24, right: 24, bottom: 50,
+          height: 60,
+          borderRadius: 14,
+          background: TAL.yellow,
+          color: TAL.dark,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "0 20px",
+          overflow: "hidden",
+          zIndex: 3,
+        }}
+      >
+        <span
+          style={{
+            fontFamily: "Geist, Inter, sans-serif",
+            fontSize: 11,
+            fontWeight: 800,
+            letterSpacing: "0.1em",
+            textTransform: "uppercase",
+          }}
+        >
+          Peak hiring month
+        </span>
+        <motion.span
+          initial={{ scale: 1 }}
+          animate={{ scale: [1, 1.1, 1] }}
+          transition={{ duration: 0.4, delay: 2.8, ease: overshoot }}
+          style={{
+            fontFamily: "Archivo Black, Geist, sans-serif",
+            fontSize: 20,
+            letterSpacing: "-0.02em",
+          }}
+        >
+          +44 Oct '25
+        </motion.span>
+        {/* shimmer */}
+        <motion.div
+          aria-hidden
+          initial={{ x: "-100%" }}
+          animate={{ x: ["−100%", "200%"] as unknown as string[] }}
+          transition={{ duration: 1.8, delay: 3.4, repeat: Infinity, repeatDelay: 4.2, ease: "easeInOut" }}
+          style={{
+            position: "absolute",
+            top: 0, bottom: 0, left: 0,
+            width: "50%",
+            background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent)",
+            opacity: 0.5,
+            pointerEvents: "none",
+          }}
+        />
+      </motion.div>
     </Shell>
   );
 }
