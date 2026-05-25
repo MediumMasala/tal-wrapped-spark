@@ -786,13 +786,22 @@ export function CardForm({ onSubmit }: { onSubmit: () => void }) {
           {[
             { id: "cf-name", label: "Your name", value: name, set: setName, ph: "Yash" },
             { id: "cf-dept", label: "Department", value: department, set: setDepartment, ph: "Operations" },
-            { id: "cf-mgr", label: `Best manager at ${wrappedConfig.companyName}`, value: bestManager, set: setBestManager, ph: "Drop a name" },
+            { id: "cf-mgr", label: `Best manager at ${wrappedConfig.companyName}`, value: bestManager, set: setBestManager, ph: "Drop a name", hint: "We'll send them a little something. 🎁" },
           ].map((f) => (
             <div key={f.id}>
               <label style={labelStyle} htmlFor={f.id}>{f.label}</label>
               <input id={f.id} style={inputStyle} placeholder={f.ph}
                 value={f.value} onChange={(e) => f.set(e.target.value)}
                 onClick={stop} onPointerDown={stop} />
+              {f.hint && (
+                <div style={{
+                  marginTop: 6, fontSize: 12, lineHeight: 1.4,
+                  color: theme.ink, opacity: 0.65, fontStyle: "italic",
+                  fontFamily: "Instrument Serif, Geist, serif",
+                }}>
+                  {f.hint}
+                </div>
+              )}
             </div>
           ))}
 
