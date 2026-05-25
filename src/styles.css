@@ -1,7 +1,7 @@
 @import "tailwindcss" source(none);
 @source "../src";
 @import "tw-animate-css";
-@import url("https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800;900&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800;900&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&family=Archivo+Black&display=swap");
 
 @custom-variant dark (&:is(.dark *));
 
@@ -68,16 +68,18 @@
   --foreground: oklch(0.97 0.005 280);
 
   /* Wrapped deck design tokens — restrained, editorial, single warm accent */
-  --w-bg:           #0E0E10;   /* Off-black canvas (never #000) */
-  --w-surface:      #16161A;   /* Card / surface fill */
-  --w-surface-2:    #1F1F24;   /* Inset chip */
-  --w-ink:          #F4F4F5;   /* Primary ink */
-  --w-ink-2:        #A1A1AA;   /* Secondary muted ink */
-  --w-ink-3:        #6B6B72;   /* Tertiary / captions */
-  --w-hairline:     rgba(244, 244, 245, 0.08);
-  --w-hairline-2:   rgba(244, 244, 245, 0.16);
-  --w-accent:       #E26A4A;   /* Single warm terracotta accent, sat < 80% */
-  --w-accent-soft:  rgba(226, 106, 74, 0.14);
+  --w-bg:           #0E0E10;
+  --w-ink:          #0E0E10;
+  --w-ink-light:    #FAFAF7;
+  /* Spotify Wrapped-style poppy palette */
+  --w-coral:        #FF5A4E;
+  --w-lime:         #B7F84C;
+  --w-lilac:        #C8B6FF;
+  --w-cream:        #F5E9D4;
+  --w-hotpink:      #FF3D8B;
+  --w-electric:     #4D6CFF;
+  --w-mustard:      #FFC542;
+  --w-charcoal:     #1A1A1F;
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.129 0.042 264.695);
   --popover: oklch(1 0 0);
@@ -168,6 +170,12 @@
   text-rendering: optimizeLegibility;
   font-feature-settings: "ss01", "ss02", "cv11";
 }
+.wrapped-deck .w-display {
+  font-family: "Archivo Black", "Geist", ui-sans-serif, sans-serif;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  line-height: 0.88;
+}
 .wrapped-deck .w-serif {
   font-family: "Instrument Serif", "Geist", serif;
   font-style: italic;
@@ -208,6 +216,17 @@
 }
 .w-pulse-dot { animation: w-pulse-dot 2.6s ease-in-out infinite; }
 .w-caret { display: inline-block; animation: w-caret 1.05s steps(1) infinite; }
+
+@keyframes w-blob {
+  0%, 100% { transform: translate(0,0) rotate(0deg) scale(1); }
+  33%      { transform: translate(4%, -3%) rotate(8deg) scale(1.06); }
+  66%      { transform: translate(-3%, 4%) rotate(-6deg) scale(0.96); }
+}
+@keyframes w-spin-slow { to { transform: rotate(360deg); } }
+@keyframes w-marquee { to { transform: translateX(-50%); } }
+.w-blob   { animation: w-blob 12s ease-in-out infinite; transform-origin: center; }
+.w-spin   { animation: w-spin-slow 24s linear infinite; }
+.w-marquee-track { display: inline-flex; gap: 32px; animation: w-marquee 22s linear infinite; }
 
 /* Subtle film grain on a fixed pseudo-element — perf-safe */
 .w-grain::after {
