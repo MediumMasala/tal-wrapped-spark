@@ -47,6 +47,7 @@ function Shell({ children, theme }: { children: React.ReactNode; theme: Theme })
         overflow: "hidden",
         background: theme.bg,
         color: theme.ink,
+        containerType: "inline-size",
       }}
     >
       {children}
@@ -172,7 +173,7 @@ export function Card1({ name }: { name: string }) {
           transition={{ ...spring, delay: 0.15 }}
           style={{
             margin: 0,
-            fontSize: "clamp(56px, 14vw, 88px)",
+            fontSize: "clamp(48px, 15cqw, 68px)",
             color: theme.ink,
           }}
         >
@@ -181,6 +182,7 @@ export function Card1({ name }: { name: string }) {
             background: theme.ink, color: theme.bg,
             padding: "0 12px 4px", display: "inline-block",
             borderRadius: 6, marginTop: 6,
+            maxWidth: "100%",
           }}>{name},</span><br />
           your year<br />
           is wrapped.
@@ -456,8 +458,10 @@ export function Card4() {
           initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}
           transition={{ ...spring, delay: 0.2 }}
           style={{
-            fontSize: "clamp(110px, 28vw, 170px)",
+            fontSize: "clamp(72px, 24cqw, 112px)",
             color: theme.ink,
+            lineHeight: 0.95,
+            letterSpacing: "-0.05em",
           }}
         >
           {wrappedConfig.stats.customers}
