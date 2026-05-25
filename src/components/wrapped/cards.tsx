@@ -737,7 +737,7 @@ export function Card3() {
         <motion.div
           aria-hidden
           initial={{ x: "-100%" }}
-          animate={{ x: ["−100%", "200%"] as unknown as string[] }}
+          animate={{ x: ["-100%", "200%"] }}
           transition={{ duration: 1.8, delay: 3.4, repeat: Infinity, repeatDelay: 4.2, ease: "easeInOut" }}
           style={{
             position: "absolute",
