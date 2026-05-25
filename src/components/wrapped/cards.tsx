@@ -157,7 +157,6 @@ export function Card1({ name }: { name: string }) {
     <Shell theme={theme}>
       <Blob color={theme.blob} size={380} x="-30%" y="-15%" delay={0.1} opacity={0.85} />
       <Blob color={PAL.mustard} size={260} x="65%" y="58%" delay={0.25} opacity={0.8} />
-      <Squiggle color={theme.ink} style={{ left: 0, right: 0, top: "62%", height: 60, width: "100%" }} />
       <DeckMark theme={theme} />
       <PageNo n={1} theme={theme} />
 
@@ -444,7 +443,6 @@ export function Card4() {
   return (
     <Shell theme={theme}>
       <Blob color={theme.blob} size={260} x="58%" y="55%" delay={0.2} opacity={0.6} />
-      <Squiggle color={theme.accent} style={{ left: 0, right: 0, top: "62%", height: 60, width: "100%" }} />
       <DeckMark theme={theme} />
       <PageNo n={5} theme={theme} />
 
