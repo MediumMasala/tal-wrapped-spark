@@ -1,5 +1,5 @@
 import { motion, type Transition } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { wrappedConfig } from "@/config/stats";
 
 /* ============================================================
@@ -11,26 +11,37 @@ import { wrappedConfig } from "@/config/stats";
 const spring: Transition = { type: "spring", stiffness: 110, damping: 22, mass: 0.9 };
 const springSoft: Transition = { type: "spring", stiffness: 80, damping: 24 };
 
-const C = {
-  bg: "var(--w-bg)",
-  surface: "var(--w-surface)",
-  surface2: "var(--w-surface-2)",
-  ink: "var(--w-ink)",
-  ink2: "var(--w-ink-2)",
-  ink3: "var(--w-ink-3)",
-  hair: "var(--w-hairline)",
-  hair2: "var(--w-hairline-2)",
-  accent: "var(--w-accent)",
-  accentSoft: "var(--w-accent-soft)",
+const PAL = {
+  coral:    "var(--w-coral)",
+  lime:     "var(--w-lime)",
+  lilac:    "var(--w-lilac)",
+  cream:    "var(--w-cream)",
+  hotpink:  "var(--w-hotpink)",
+  electric: "var(--w-electric)",
+  mustard:  "var(--w-mustard)",
+  ink:      "#0E0E10",
+  light:    "#FAFAF7",
+};
+
+type Theme = { bg: string; ink: string; accent: string };
+const THEMES: Record<string, Theme> = {
+  coral:    { bg: PAL.coral,    ink: PAL.ink,   accent: PAL.ink },
+  lime:     { bg: PAL.lime,     ink: PAL.ink,   accent: PAL.hotpink },
+  lilac:    { bg: PAL.lilac,    ink: PAL.ink,   accent: PAL.electric },
+  cream:    { bg: PAL.cream,    ink: PAL.ink,   accent: PAL.coral },
+  hotpink:  { bg: PAL.hotpink,  ink: PAL.light, accent: PAL.lime },
+  electric: { bg: PAL.electric, ink: PAL.light, accent: PAL.mustard },
+  mustard:  { bg: PAL.mustard,  ink: PAL.ink,   accent: PAL.electric },
+  ink:      { bg: "#0E0E10",    ink: PAL.light, accent: PAL.lime },
 };
 
 function Shell({
   children,
-  background = C.bg,
+  theme,
   grain = true,
 }: {
   children: React.ReactNode;
-  background?: string;
+  theme: Theme;
   grain?: boolean;
 }) {
   return (
@@ -40,8 +51,8 @@ function Shell({
         position: "absolute",
         inset: 0,
         overflow: "hidden",
-        background,
-        color: C.ink,
+        background: theme.bg,
+        color: theme.ink,
       }}
     >
       {children}
@@ -49,49 +60,108 @@ function Shell({
   );
 }
 
-function Kicker({ children, accent = false }: { children: React.ReactNode; accent?: boolean }) {
+/* Decorative animated blob */
+function Blob({
+  color,
+  size = 320,
+  x = "60%",
+  y = "10%",
+  delay = 0,
+}: { color: string; size?: number; x?: string; y?: string; delay?: number }) {
   return (
     <div
-      className="w-kicker"
+      aria-hidden
+      className="w-blob"
+      style={{
+        position: "absolute",
+        left: x,
+        top: y,
+        width: size,
+        height: size,
+        borderRadius: "50%",
+        background: color,
+        filter: "blur(2px)",
+        mixBlendMode: "multiply",
+        animationDelay: `${delay}s`,
+        pointerEvents: "none",
+      }}
+    />
+  );
+}
+
+/* Wavy squiggle SVG (Spotify-style) */
+function Squiggle({
+  color,
+  style,
+}: { color: string; style?: React.CSSProperties }) {
+  return (
+    <svg
+      viewBox="0 0 400 100"
+      preserveAspectRatio="none"
+      style={{ position: "absolute", pointerEvents: "none", ...style }}
+    >
+      <path
+        d="M0 50 Q 50 0 100 50 T 200 50 T 300 50 T 400 50"
+        stroke={color}
+        strokeWidth="6"
+        fill="none"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+function Pill({
+  children,
+  bg,
+  fg,
+}: { children: React.ReactNode; bg: string; fg: string }) {
+  return (
+    <motion.span
+      initial={{ opacity: 0, y: -8, scale: 0.9 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={spring}
+      className="w-mono"
       style={{
         display: "inline-flex",
         alignItems: "center",
         gap: 8,
-        color: accent ? C.accent : C.ink2,
+        padding: "6px 12px",
+        borderRadius: 999,
+        background: bg,
+        color: fg,
+        fontSize: 11,
+        fontWeight: 600,
+        letterSpacing: "0.14em",
+        textTransform: "uppercase",
       }}
     >
       <span
         className="w-pulse-dot"
-        style={{
-          width: 6,
-          height: 6,
-          borderRadius: 999,
-          background: accent ? C.accent : C.ink2,
-          display: "inline-block",
-        }}
+        style={{ width: 6, height: 6, borderRadius: 999, background: fg }}
       />
       {children}
-    </div>
+    </motion.span>
   );
 }
 
-function Hairline({ delay = 0 }: { delay?: number }) {
+function Hairline({ delay = 0, color = "currentColor" }: { delay?: number; color?: string }) {
   return (
     <motion.div
       initial={{ scaleX: 0, opacity: 0 }}
-      animate={{ scaleX: 1, opacity: 1 }}
+      animate={{ scaleX: 1, opacity: 0.25 }}
       transition={{ ...springSoft, delay }}
       style={{
-        height: 1,
+        height: 2,
         width: "100%",
-        background: C.hair2,
+        background: color,
         transformOrigin: "left",
       }}
     />
   );
 }
 
-function PageNo({ n, of = 9 }: { n: number; of?: number }) {
+function PageNo({ n, of = 10, color = "currentColor" }: { n: number; of?: number; color?: string }) {
   return (
     <div
       style={{
@@ -101,7 +171,8 @@ function PageNo({ n, of = 9 }: { n: number; of?: number }) {
         display: "flex",
         alignItems: "center",
         gap: 8,
-        color: C.ink3,
+        color,
+        opacity: 0.6,
       }}
       className="w-mono"
     >
@@ -112,7 +183,7 @@ function PageNo({ n, of = 9 }: { n: number; of?: number }) {
   );
 }
 
-function DeckMark() {
+function DeckMark({ color = "currentColor", dot }: { color?: string; dot?: string }) {
   return (
     <div
       style={{
@@ -122,7 +193,8 @@ function DeckMark() {
         display: "flex",
         alignItems: "center",
         gap: 8,
-        color: C.ink2,
+        color,
+        opacity: 0.8,
       }}
       className="w-kicker"
     >
@@ -130,8 +202,8 @@ function DeckMark() {
         style={{
           width: 14,
           height: 14,
-          borderRadius: 3,
-          background: C.accent,
+          borderRadius: 999,
+          background: dot ?? color,
           display: "inline-block",
         }}
       />
