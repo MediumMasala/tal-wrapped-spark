@@ -784,8 +784,8 @@ export function CardForm({ onSubmit }: { onSubmit: () => void }) {
           style={{ marginTop: 22, display: "flex", flexDirection: "column", gap: 14 }}
         >
           {[
-            { id: "cf-name", label: "Your name", value: name, set: setName, ph: "Yash" },
-            { id: "cf-dept", label: "Department", value: department, set: setDepartment, ph: "Operations" },
+            { id: "cf-name", label: "Your name", value: name, set: setName, ph: "Yash", hint: "" },
+            { id: "cf-dept", label: "Department", value: department, set: setDepartment, ph: "Operations", hint: "" },
             { id: "cf-mgr", label: `Best manager at ${wrappedConfig.companyName}`, value: bestManager, set: setBestManager, ph: "Drop a name", hint: "We'll send them a little something. 🎁" },
           ].map((f) => (
             <div key={f.id}>
